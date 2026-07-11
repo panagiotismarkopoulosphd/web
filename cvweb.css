@@ -1,7 +1,6 @@
 /* =====================================================
-   CV Web Stylesheet v2 (Fixed)
-   - Desktop: clean sticky top nav (#top-menu)
-   - Mobile: hamburger controls #layout-menu as left drawer
+   CV Web Stylesheet — Always Hamburger/Menu Button
+   Consistent on desktop + mobile
    ===================================================== */
 
 /* ---------- Base ---------- */
@@ -15,13 +14,13 @@ body {
 }
 
 #layout-content {
-  padding: 0.5em 1.6em 1.2em;
+  padding: 0.6em 1.6em 1.2em;
   background: #fff;
   max-width: 1080px;
   margin: 0 auto;
 }
 
-/* Header name */
+/* Header / name */
 #toptitle {
   padding-bottom: 0.3em;
   margin-bottom: 1.3em;
@@ -43,7 +42,7 @@ h1, h2, h3, h4 {
   padding-bottom: 0.18em;
   line-height: 1.2;
   border-bottom: 1px solid #ccc;
-  scroll-margin-top: 1.5em;
+  scroll-margin-top: 1.6em;
 }
 
 h1 {
@@ -62,7 +61,7 @@ h3 {
   border-bottom: none;
 }
 
-/* Paragraphs & lists */
+/* Paragraphs, lists, links */
 p {
   margin: 0.3em 0 0.8em;
   line-height: 1.52;
@@ -88,49 +87,60 @@ a:hover {
   text-decoration: underline;
 }
 
-/* ---------- Desktop Top Sticky Menu ---------- */
+/* Hide the old horizontal top menu (burger is now the only nav) */
 #top-menu {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: #f6f6f6;
-  border-bottom: 1px solid #ddd;
-  padding: 0.45em 1em;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  display: flex;
-  justify-content: center;
-}
-
-#top-menu .menu-inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.3em 1.0em;
-  width: 100%;
-  max-width: 1100px;
-}
-
-#top-menu .menu-item {
-  padding: 0;
-}
-
-#top-menu a {
-  color: #0D5EAF;
-  font-size: 0.92em;
-  padding: 5px 9px;
-  border-radius: 4px;
-  white-space: nowrap;
-  transition: background 0.12s ease;
-}
-
-#top-menu a:hover {
-  background: #e8e8e8;
-  text-decoration: none;
-}
-
-/* ---------- OLD LEFT MENU (#layout-menu) — HIDDEN BY DEFAULT ---------- */
-#layout-menu {
   display: none !important;
+}
+
+/* ---------- ALWAYS VISIBLE HAMBURGER / MENU BUTTON ---------- */
+.mobile-nav {
+  display: block;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1002;
+}
+
+#hamburger-btn {
+  font-size: 22px;
+  background: #f6f6f6;
+  border: 1px solid #ccc;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  color: #022b6d;
+}
+
+/* Desktop: show "☰ Menu" */
+@media (min-width: 769px) {
+  #hamburger-btn::after {
+    content: " Menu";
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+}
+
+/* Mobile: pure ☰ only (standard) */
+@media (max-width: 768px) {
+  #hamburger-btn::after {
+    content: "";
+  }
+  #hamburger-btn {
+    font-size: 26px;
+    padding: 7px 13px;
+  }
+}
+
+/* ---------- LEFT DRAWER MENU ---------- */
+#layout-menu {
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -138,24 +148,22 @@ a:hover {
   height: 100vh;
   background: #f6f6f6;
   border-right: 1px solid #ddd;
-  padding: 60px 1em 1em 1em;
+  padding: 70px 1em 1em 1em;
   z-index: 1001;
   overflow-y: auto;
-  box-shadow: 3px 0 10px rgba(0,0,0,0.12);
+  box-shadow: 3px 0 12px rgba(0,0,0,0.13);
 }
 
-/* Only appears when hamburger JS adds the .show class (mobile) */
 #layout-menu.show {
-  display: block !important;
+  display: block;
 }
 
-/* Style links inside the mobile drawer */
 #layout-menu a {
   display: block;
-  padding: 6px 10px;
+  padding: 7px 12px;
   color: #0D5EAF;
   font-size: 0.95em;
-  border-radius: 3px;
+  border-radius: 4px;
   margin-bottom: 2px;
 }
 
@@ -164,56 +172,21 @@ a:hover {
   text-decoration: none;
 }
 
-/* ---------- Mobile Hamburger ---------- */
-.mobile-nav {
-  display: none;
+/* Content breathing room */
+#layout-content {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+@media (min-width: 769px) {
+  #layout-content {
+    padding-top: 0.8em;
+  }
 }
 
 @media (max-width: 768px) {
-  /* Hide top horizontal menu on mobile */
-  #top-menu {
-    display: none;
-  }
-
-  /* Show hamburger button fixed top-left */
-  .mobile-nav {
-    display: block;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 1002;
-  }
-
-  #hamburger-btn {
-    font-size: 26px;
-    background: #f6f6f6;
-    border: 1px solid #ccc;
-    padding: 7px 13px;
-    border-radius: 6px;
-    cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    line-height: 1;
-  }
-
-  /* Breathing room so hamburger doesn't overlap name */
   #layout-content {
-    padding-left: 1em;
-    padding-right: 1em;
-    padding-top: 3.5em;
-  }
-
-  h1, h2, h3 {
-    scroll-margin-top: 4.5em;
-  }
-}
-
-/* Desktop: force old left menu to stay hidden */
-@media (min-width: 769px) {
-  .mobile-nav {
-    display: none;
-  }
-  #layout-menu {
-    display: none !important;
+    padding-top: 3.6em;
   }
 }
 
@@ -254,7 +227,7 @@ td, th {
 
 /* Print */
 @media print {
-  #top-menu, .mobile-nav, #layout-menu {
+  .mobile-nav, #layout-menu, #top-menu {
     display: none !important;
   }
   body { font-size: 10.5pt; color: #000; }
