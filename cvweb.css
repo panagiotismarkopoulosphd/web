@@ -1,84 +1,81 @@
 /* =====================================================
-   CV Web Stylesheet — Cleaned, Consolidated & Responsive
-   For Dr. Panagiotis (Panos) Markopoulos, Ph.D.
-   All styling moved here from inline <style> + original cvweb.css
-   Legacy left-menu rules removed; mobile hamburger fully functional
+   CV Web Stylesheet v2 (Fixed)
+   - Desktop: clean sticky top nav (#top-menu)
+   - Mobile: hamburger controls #layout-menu as left drawer
    ===================================================== */
 
-/* ---------- Base typography & layout ---------- */
+/* ---------- Base ---------- */
 body {
   background: #fff;
   font-family: Georgia, serif;
   color: #333;
   margin: 0;
-  padding-bottom: 1.5em;
-  line-height: 1.55;
+  padding-bottom: 1.2em;
+  line-height: 1.52;
 }
 
 #layout-content {
-  padding: 0.6em 1.6em 1.5em;
+  padding: 0.5em 1.6em 1.2em;
   background: #fff;
   max-width: 1080px;
   margin: 0 auto;
 }
 
-/* Header / name block */
+/* Header name */
 #toptitle {
-  padding-bottom: 0.35em;
-  margin-bottom: 1.4em;
+  padding-bottom: 0.3em;
+  margin-bottom: 1.3em;
   border-bottom: 3px double #aaa;
 }
 
 #toptitle span {
-  font-size: 1.8em;
+  font-size: 1.75em;
   font-weight: bold;
   color: #022b6d;
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
-/* ---------- Headings ---------- */
+/* Headings */
 h1, h2, h3, h4 {
   color: #0D5EAF;
-  margin-top: 1.15em;
-  margin-bottom: 0.35em;
-  padding-bottom: 0.2em;
+  margin-top: 1.1em;
+  margin-bottom: 0.3em;
+  padding-bottom: 0.18em;
   line-height: 1.2;
   border-bottom: 1px solid #ccc;
-  scroll-margin-top: 1.4em; /* offset for sticky nav */
+  scroll-margin-top: 1.5em;
 }
 
 h1 {
-  font-size: 1.65em;
+  font-size: 1.6em;
   border-bottom: 2px solid #0D5EAF;
-  padding-top: 0.3em;
 }
 
 h2 {
-  font-size: 1.28em;
-  padding-top: 0.55em;
+  font-size: 1.25em;
+  padding-top: 0.5em;
   color: #022b6d;
 }
 
 h3 {
-  font-size: 1.12em;
+  font-size: 1.1em;
   border-bottom: none;
-  color: #0D5EAF;
 }
 
-/* ---------- Paragraphs, lists, links ---------- */
+/* Paragraphs & lists */
 p {
-  margin: 0.35em 0 0.85em;
-  line-height: 1.55;
+  margin: 0.3em 0 0.8em;
+  line-height: 1.52;
 }
 
 ul, ol {
-  margin: 0.25em 0 0.9em;
-  padding-left: 1.35em;
+  margin: 0.2em 0 0.85em;
+  padding-left: 1.3em;
 }
 
 li {
-  margin-bottom: 0.32em;
-  line-height: 1.45;
+  margin-bottom: 0.3em;
+  line-height: 1.42;
 }
 
 a {
@@ -91,7 +88,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* ---------- Top sticky navigation (desktop) ---------- */
+/* ---------- Desktop Top Sticky Menu ---------- */
 #top-menu {
   position: sticky;
   top: 0;
@@ -108,7 +105,7 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35em 1.05em;
+  gap: 0.3em 1.0em;
   width: 100%;
   max-width: 1100px;
 }
@@ -119,11 +116,11 @@ a:hover {
 
 #top-menu a {
   color: #0D5EAF;
-  font-size: 0.93em;
+  font-size: 0.92em;
   padding: 5px 9px;
   border-radius: 4px;
   white-space: nowrap;
-  transition: background-color 0.12s ease;
+  transition: background 0.12s ease;
 }
 
 #top-menu a:hover {
@@ -131,18 +128,54 @@ a:hover {
   text-decoration: none;
 }
 
-/* ---------- Mobile hamburger & menu ---------- */
+/* ---------- OLD LEFT MENU (#layout-menu) — HIDDEN BY DEFAULT ---------- */
+#layout-menu {
+  display: none !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: #f6f6f6;
+  border-right: 1px solid #ddd;
+  padding: 60px 1em 1em 1em;
+  z-index: 1001;
+  overflow-y: auto;
+  box-shadow: 3px 0 10px rgba(0,0,0,0.12);
+}
+
+/* Only appears when hamburger JS adds the .show class (mobile) */
+#layout-menu.show {
+  display: block !important;
+}
+
+/* Style links inside the mobile drawer */
+#layout-menu a {
+  display: block;
+  padding: 6px 10px;
+  color: #0D5EAF;
+  font-size: 0.95em;
+  border-radius: 3px;
+  margin-bottom: 2px;
+}
+
+#layout-menu a:hover {
+  background: #e8e8e8;
+  text-decoration: none;
+}
+
+/* ---------- Mobile Hamburger ---------- */
 .mobile-nav {
   display: none;
 }
 
 @media (max-width: 768px) {
-  /* Hide desktop horizontal menu */
+  /* Hide top horizontal menu on mobile */
   #top-menu {
     display: none;
   }
 
-  /* Show hamburger */
+  /* Show hamburger button fixed top-left */
   .mobile-nav {
     display: block;
     position: fixed;
@@ -162,67 +195,29 @@ a:hover {
     line-height: 1;
   }
 
-  /* Mobile menu (vertical overlay) — toggle via .show on #top-menu */
-  #top-menu.show {
-    display: block !important;
-    position: fixed;
-    top: 52px;
-    left: 0;
-    right: 0;
-    width: 100%;
-    max-height: 68vh;
-    overflow-y: auto;
-    background: #f6f6f6;
-    border-bottom: 1px solid #ddd;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    z-index: 1001;
-    padding: 0.9em 1.1em;
-  }
-
-  #top-menu.show .menu-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.05em;
-  }
-
-  #top-menu.show a {
-    display: block;
-    width: 100%;
-    padding: 9px 12px;
-    font-size: 1.02em;
-    border-bottom: 1px solid #e5e5e5;
-    border-radius: 0;
-  }
-
-  #top-menu.show a:last-child {
-    border-bottom: none;
-  }
-
-  /* Prevent hamburger from overlapping or shoving the name/header */
+  /* Breathing room so hamburger doesn't overlap name */
   #layout-content {
     padding-left: 1em;
     padding-right: 1em;
-    padding-top: 3.4em; /* breathing room under fixed hamburger */
-  }
-
-  #toptitle {
-    padding-top: 0.15em;
-    margin-top: 0.1em;
+    padding-top: 3.5em;
   }
 
   h1, h2, h3 {
-    scroll-margin-top: 4.2em; /* larger offset when mobile menu is open */
+    scroll-margin-top: 4.5em;
   }
 }
 
-/* Desktop: hide hamburger */
+/* Desktop: force old left menu to stay hidden */
 @media (min-width: 769px) {
   .mobile-nav {
     display: none;
   }
+  #layout-menu {
+    display: none !important;
+  }
 }
 
-/* ---------- Misc content polish ---------- */
+/* ---------- Misc ---------- */
 img {
   border: none;
   max-width: 100%;
@@ -233,59 +228,36 @@ strong { font-weight: bold; }
 em { font-style: italic; }
 
 pre, tt {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: ui-monospace, monospace;
   font-size: 0.88em;
   background: #f7f7f7;
-  padding: 0.25em 0.45em;
+  padding: 0.2em 0.4em;
   border-radius: 3px;
 }
 
 pre {
-  padding: 0.7em 0.9em;
+  padding: 0.7em;
   overflow-x: auto;
-  margin: 0.8em 0;
 }
 
-/* Tables (if any data tables appear) */
 table {
   border: 1px solid #ccc;
   border-collapse: collapse;
   margin: 1em 0;
-  width: 100%;
 }
 
 td, th {
-  padding: 6px 9px;
+  padding: 5px 8px;
   border: 1px solid #ddd;
   text-align: left;
-  vertical-align: top;
 }
 
-tr.heading {
-  font-weight: bold;
-  background: #f4f4f4;
-}
-
-/* ---------- Print ---------- */
+/* Print */
 @media print {
-  #top-menu,
-  .mobile-nav {
+  #top-menu, .mobile-nav, #layout-menu {
     display: none !important;
   }
-  body {
-    font-size: 10.5pt;
-    color: #000;
-  }
-  h1, h2, h3 {
-    color: #000;
-    border-bottom: 1px solid #000;
-  }
-  a {
-    color: #000;
-    text-decoration: underline;
-  }
-  #layout-content {
-    padding: 0 0.6in;
-    max-width: 100%;
-  }
+  body { font-size: 10.5pt; color: #000; }
+  h1, h2, h3 { color: #000; border-bottom: 1px solid #000; }
+  a { color: #000; text-decoration: underline; }
 }
