@@ -7,6 +7,84 @@
   <title>main</title>
   <link rel="stylesheet" href="cvweb.css">
 <style>
+  /* ========== TOP STICKY MENU ========== */
+#top-menu {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: #f6f6f6;
+  border-bottom: 1px solid #dddddd;
+  padding: 0.4em 1em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#top-menu .menu-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3em 1.2em;
+  width: 100%;
+}
+
+#top-menu .menu-category {
+  font-weight: bold;
+  color: #022b6d;
+  margin-right: 0.8em;
+  padding-right: 0.8em;
+  border-right: 1px solid #ccc;
+}
+
+#top-menu .menu-item {
+  padding: 0;
+  text-indent: 0;
+}
+
+#top-menu a {
+  color: #527bbd;
+  text-decoration: none;
+  font-size: 0.95em;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+#top-menu a:hover {
+  background: #e8e8e8;
+  text-decoration: none;
+}
+
+/* Hide old left menu on desktop */
+#layout-menu {
+  display: none;
+}
+
+/* ========== MOBILE BEHAVIOR (keep current hamburger) ========== */
+@media (max-width: 768px) {
+  #top-menu {
+    display: none; /* Hide top menu on mobile */
+  }
+
+  #layout-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: #f6f6f6;
+    border-right: 1px solid #ddd;
+    padding: 60px 1em 1em 1em;
+    z-index: 1001;
+    overflow-y: auto;
+    box-shadow: 3px 0 10px rgba(0,0,0,0.15);
+  }
+
+  #layout-menu.show {
+    display: block;
+  }
+}
 /* Additional tweaks for generated content */
 h1, h2, h3, h4 { scroll-margin-top: 1em; }
 li { margin-bottom: 0.35em; }
@@ -60,39 +138,32 @@ p { line-height: 1.5; }
 </head>
 <body>
 
-  <!-- HAMBURGER BUTTON (only visible on mobile) -->
-  <div class="mobile-nav">
-    <button id="hamburger-btn">☰</button>
+
+<!-- ========== TOP STICKY MENU ========== -->
+<nav id="top-menu">
+  <div class="menu-inner">
+    <div class="menu-category">Menu</div>
+    <div class="menu-item"><a href="#sec:contact">Contact</a></div>
+    <div class="menu-item"><a href="#sec:education">Education</a></div>
+    <div class="menu-item"><a href="#sec:employment">Employment</a></div>
+    <div class="menu-item"><a href="#sec:awards">Awards &amp; Honors</a></div>
+    <div class="menu-item"><a href="#sec:research">Publications</a></div>
+    <div class="menu-item"><a href="#sec:presentations">Talks &amp; Tutorials</a></div>
+    <div class="menu-item"><a href="#sec:ip">Patents</a></div>
+    <div class="menu-item"><a href="#sec:grants">Funding</a></div>
+    <div class="menu-item"><a href="#sec:teaching">Teaching</a></div>
+    <div class="menu-item"><a href="#sec:team">Student Mentorship</a></div>
+    <div class="menu-item"><a href="#sec:service">Service</a></div>
   </div>
+</nav>
 
-  <div style="display: flex; align-items: flex-start;">
+<!-- HAMBURGER BUTTON (Mobile) -->
+<div class="mobile-nav">
+  <button id="hamburger-btn">☰</button>
+</div>
 
-    <!-- LEFT MENU -->
-    <div id="layout-menu" style="position: sticky; top: 20px; flex: 0 0 auto; align-self: flex-start; max-height: calc(100vh - 40px); overflow-y: auto; margin-right: 12px; padding: 0.5em 8px; border: 1px solid #dddddd; background: #f6f6f6;">
-      <div class="menu-category"></div>
-      <div class="menu-item"><a href="#sec:contact">Contact</a></div>
-
-      <div class="menu-category"></div>
-      <div class="menu-item"><a href="#sec:education">Education</a></div>
-      <div class="menu-item"><a href="#sec:employment">Employment</a></div>
-      <div class="menu-item"><a href="#sec:awards">Awards &amp; Honors</a></div>
-
-      <div class="menu-category"></div>
-      <div class="menu-item"><a href="#sec:research">Publications</a></div>
-      <div class="menu-item"><a href="#sec:presentations">Talks &amp; Tutorials</a></div>
-      <div class="menu-item"><a href="#sec:ip">Patents</a></div>
-      <div class="menu-item"><a href="#sec:grants">Funding</a></div>
-
-      <div class="menu-category"></div>
-      <div class="menu-item"><a href="#sec:teaching">Teaching</a></div>
-      <div class="menu-item"><a href="#sec:team">Student Mentorship</a></div>
-
-      <div class="menu-category"></div>
-      <div class="menu-item"><a href="#sec:service">Service</a></div>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="layout-content" style="flex: 1; min-width: 0; padding-top: 0; padding-left: 1em; padding-right: 1em;">
+<!-- ========== MAIN CONTENT ========== -->
+<div id="layout-content">
 
   <div id="toptitle">
     <br>
@@ -1797,7 +1868,6 @@ Opportunities (ECCO),” 2017–present</p></li>
 RIT, 2019</p></li>
 </ul>
 
- </div>
  </div>
 
   <script>
