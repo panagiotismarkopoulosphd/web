@@ -1,8 +1,5 @@
-/* =====================================================
-   CV Web Stylesheet — Always Hamburger/Menu Button (click fixed)
-   ===================================================== */
+/* FINAL CSS — Checkbox hack (no JS). Button always works. */
 
-/* Base */
 body {
   background: #fff;
   font-family: Georgia, serif;
@@ -83,12 +80,11 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Hide old horizontal top menu */
 #top-menu {
   display: none !important;
 }
 
-/* ---------- ALWAYS VISIBLE HAMBURGER / MENU BUTTON ---------- */
+/* HAMBURGER BUTTON */
 .mobile-nav {
   display: block;
   position: fixed;
@@ -111,9 +107,9 @@ a:hover {
   gap: 6px;
   font-family: inherit;
   color: #022b6d;
+  user-select: none;
 }
 
-/* Desktop: "☰ Menu" */
 @media (min-width: 769px) {
   #hamburger-btn::after {
     content: " Menu";
@@ -123,7 +119,6 @@ a:hover {
   }
 }
 
-/* Mobile: pure ☰ */
 @media (max-width: 768px) {
   #hamburger-btn::after {
     content: "";
@@ -134,7 +129,12 @@ a:hover {
   }
 }
 
-/* ---------- LEFT DRAWER MENU (FORCE HIDDEN + TOGGLE) ---------- */
+/* HIDDEN CHECKBOX (for reliable toggle, no JS) */
+.menu-toggle {
+  display: none;
+}
+
+/* THE DRAWER MENU */
 #layout-menu {
   display: none !important;
   position: fixed;
@@ -150,8 +150,8 @@ a:hover {
   box-shadow: 3px 0 12px rgba(0,0,0,0.13);
 }
 
-/* This is what the click should toggle */
-#layout-menu.show {
+/* Show drawer when checkbox is checked */
+.menu-toggle:checked ~ #layout-menu {
   display: block !important;
 }
 
@@ -169,7 +169,6 @@ a:hover {
   text-decoration: none;
 }
 
-/* Content padding */
 #layout-content {
   padding-left: 1em;
   padding-right: 1em;
@@ -187,7 +186,6 @@ a:hover {
   }
 }
 
-/* Misc */
 img {
   border: none;
   max-width: 100%;
@@ -222,7 +220,6 @@ td, th {
   text-align: left;
 }
 
-/* Print */
 @media print {
   .mobile-nav, #layout-menu, #top-menu {
     display: none !important;
