@@ -1,9 +1,8 @@
 /* =====================================================
-   CV Web Stylesheet — Always Hamburger/Menu Button
-   Consistent on desktop + mobile
+   CV Web Stylesheet — Always Hamburger/Menu Button (click fixed)
    ===================================================== */
 
-/* ---------- Base ---------- */
+/* Base */
 body {
   background: #fff;
   font-family: Georgia, serif;
@@ -20,7 +19,6 @@ body {
   margin: 0 auto;
 }
 
-/* Header / name */
 #toptitle {
   padding-bottom: 0.3em;
   margin-bottom: 1.3em;
@@ -34,7 +32,6 @@ body {
   line-height: 1.1;
 }
 
-/* Headings */
 h1, h2, h3, h4 {
   color: #0D5EAF;
   margin-top: 1.1em;
@@ -61,7 +58,6 @@ h3 {
   border-bottom: none;
 }
 
-/* Paragraphs, lists, links */
 p {
   margin: 0.3em 0 0.8em;
   line-height: 1.52;
@@ -87,7 +83,7 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Hide the old horizontal top menu (burger is now the only nav) */
+/* Hide old horizontal top menu */
 #top-menu {
   display: none !important;
 }
@@ -117,7 +113,7 @@ a:hover {
   color: #022b6d;
 }
 
-/* Desktop: show "☰ Menu" */
+/* Desktop: "☰ Menu" */
 @media (min-width: 769px) {
   #hamburger-btn::after {
     content: " Menu";
@@ -127,7 +123,7 @@ a:hover {
   }
 }
 
-/* Mobile: pure ☰ only (standard) */
+/* Mobile: pure ☰ */
 @media (max-width: 768px) {
   #hamburger-btn::after {
     content: "";
@@ -138,9 +134,9 @@ a:hover {
   }
 }
 
-/* ---------- LEFT DRAWER MENU ---------- */
+/* ---------- LEFT DRAWER MENU (FORCE HIDDEN + TOGGLE) ---------- */
 #layout-menu {
-  display: none;
+  display: none !important;
   position: fixed;
   top: 0;
   left: 0;
@@ -154,8 +150,9 @@ a:hover {
   box-shadow: 3px 0 12px rgba(0,0,0,0.13);
 }
 
+/* This is what the click should toggle */
 #layout-menu.show {
-  display: block;
+  display: block !important;
 }
 
 #layout-menu a {
@@ -172,7 +169,7 @@ a:hover {
   text-decoration: none;
 }
 
-/* Content breathing room */
+/* Content padding */
 #layout-content {
   padding-left: 1em;
   padding-right: 1em;
@@ -190,7 +187,7 @@ a:hover {
   }
 }
 
-/* ---------- Misc ---------- */
+/* Misc */
 img {
   border: none;
   max-width: 100%;
