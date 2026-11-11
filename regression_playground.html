@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bias–Variance Playground · Polynomial Regression</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@11.11.1/lib/browser/math.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --text: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --primary: #1e40af;
+  --primary-hover: #1e3a8a;
+  --accent: #0f766e;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 28px;
+}
+.header h1 {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.header .subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+.tabs {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  gap: 4px;
+}
+.tabs button {
+  background: none;
+  border: none;
+  padding: 14px 18px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+.tabs button:hover { color: var(--text); }
+.tabs button.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 24px 28px;
+  gap: 24px;
+}
+.controls {
+  flex: 0 0 360px;
+  background: var(--surface);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.plots {
+  flex: 1 1 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+h2 { font-size: 1.125rem; font-weight: 600; margin: 0 0 16px 0; letter-spacing: -0.01em; }
+.control-group { margin-bottom: 16px; }
+label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+input[type=range] {
+  width: 100%;
+  accent-color: var(--primary);
+  margin: 6px 0 4px;
+}
+.value { font-weight: 500; color: var(--primary); }
+.note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.metrics {
+  background: #f0f7ff;
+  border: 1px solid #dbeafe;
+  padding: 14px 16px;
+  border-radius: 8px;
+  margin-top: 18px;
+  font-size: 0.875rem;
+}
+.metrics div { margin: 4px 0; }
+.metrics strong { font-weight: 600; }
+button#regen {
+  width: 100%;
+  padding: 11px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.15s;
+}
+button#regen:hover { background: var(--primary-hover); }
+#mainPlot, #bvPlot {
+  width: 100%;
+  height: 460px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.theory, .about {
+  max-width: 880px;
+  margin: 32px auto;
+  padding: 32px 36px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  line-height: 1.65;
+}
+.theory h2, .about h2 { font-size: 1.5rem; margin-bottom: 8px; }
+.theory h3, .about h3 { font-size: 1.125rem; margin: 28px 0 10px; color: var(--primary); font-weight: 600; }
+.theory p, .about p { margin: 0.75em 0; }
+.theory ul, .theory ol, .about ul { margin: 0.6em 0 0.6em 1.2em; padding: 0; }
+.theory li, .about li { margin: 0.35em 0; }
+.math-block { margin: 1.2em 0; text-align: center; }
+.about a { color: var(--primary); text-decoration: none; }
+.about a:hover { text-decoration: underline; }
+.contact-block { background: #f9fafb; padding: 16px 20px; border-radius: 8px; border: 1px solid var(--border); margin: 16px 0; }
+footer {
+  text-align: center;
+  padding: 28px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+@media (max-width: 960px) {
+  .container { flex-direction: column; padding: 16px; }
+  .controls { flex: 1 1 auto; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Bias–Variance Playground</h1>
+    <div class="subtitle">Polynomial regression · Interactive demonstration of the bias–variance trade-off</div>
+  </div>
+</div>
+<div class="tabs">
+  <button class="tab-btn active" data-tab="playground">Playground</button>
+  <button class="tab-btn" data-tab="theory">Theory</button>
+  <button class="tab-btn" data-tab="about">About</button>
+</div>
+
+<div id="playground" class="tab-content active">
+<div class="container">
+  <div class="controls">
+    <h2>Controls</h2>
+    <p style="font-size:0.875rem; color:var(--text-secondary); margin:0 0 18px;">
+      True process: \( y = f(x) + e \), \(\mathbb{E}[e]=0\), \(e \perp x\)<br>
+      Model: \( \hat{y} = m(x;\mathbf{a}) \)
+    </p>
+
+    <div class="control-group">
+      <label>True polynomial degree \( d_f \) <span class="value" id="trueDegVal">3</span></label>
+      <input type="range" id="trueDegree" min="0" max="8" value="3" step="1">
+      <div class="note">Degree of the unknown true function \( f \). Coefficients are fixed once the degree is chosen.</div>
+    </div>
+
+    <div class="control-group">
+      <label>Model polynomial degree \( d_m \) <span class="value" id="modelDegVal">3</span></label>
+      <input type="range" id="modelDegree" min="0" max="10" value="3" step="1">
+      <div class="note">Degree of the polynomial model \( m(x;\mathbf{a}) \) that is fitted to the data.</div>
+    </div>
+
+    <div class="control-group">
+      <label>Noise standard deviation \( \sigma \) <span class="value" id="sigmaVal">0.25</span></label>
+      <input type="range" id="sigma" min="0" max="1" value="0.25" step="0.05">
+      <div class="note">Irreducible error variance is \( \sigma^2 \).</div>
+    </div>
+
+    <div class="control-group">
+      <label>Training points \( N \) <span class="value" id="nVal">60</span></label>
+      <input type="range" id="nTrain" min="15" max="250" value="60" step="5">
+    </div>
+
+    <div class="control-group">
+      <label>Monte Carlo runs \( R \) <span class="value" id="rVal">20</span></label>
+      <input type="range" id="mcRuns" min="1" max="1000" value="20" step="1">
+      <div class="note">Number of independent training sets used to estimate bias and variance.</div>
+    </div>
+
+    <div class="control-group">
+      <label style="font-weight:400;"><input type="checkbox" id="showBand" checked style="width:auto;margin-right:6px;"> Show variance band (±1 std from Monte Carlo)</label>
+    </div>
+
+    <button id="regen">Regenerate data & fit</button>
+
+    <div class="metrics" id="metrics"></div>
+  </div>
+
+  <div class="plots">
+    <div id="mainPlot"></div>
+    <div id="bvPlot"></div>
+  </div>
+</div>
+</div>
+
+<div id="theory" class="tab-content">
+<div class="theory">
+  <h2>Theory</h2>
+  <p style="color:var(--text-secondary); margin-top:0;">Polynomial regression and the bias–variance trade-off.</p>
+
+  <h3>Data-generating process</h3>
+  <p>Observations follow</p>
+  <div class="math-block">$$ y = f(x) + e $$</div>
+  <p>where \( f \) is a fixed polynomial of degree \( d_f \) (unknown to the learner), and the noise \( e \) satisfies \( \mathbb{E}[e] = 0 \) and is independent of \( x \). Noise variance is \( \sigma^2 \). Inputs \( x \) are drawn uniformly from \( [-1, 1] \).</p>
+  <p>The coefficients of the true polynomial are fixed once \( d_f \) is selected, so the ground-truth function remains constant while you experiment with models and sample sizes.</p>
+
+  <h3>The model</h3>
+  <p>We approximate \( f \) by a polynomial of degree \( d_m \):</p>
+  <div class="math-block">$$ m(x;\mathbf{a}) = a_0 + a_1 x + \cdots + a_{d_m} x^{d_m} $$</div>
+  <p>The parameter vector \( \mathbf{a} \) is obtained by the exact least-squares solution \( \mathbf{a} = X^{+} \mathbf{y} \), where \( X^{+} \) is the Moore–Penrose pseudoinverse of the Vandermonde matrix (computed via SVD). No regularization is applied. The fitted model is \( \hat{f}(x) = m(x;\hat{\mathbf{a}}) \).</p>
+  <p>True degree \( d_f \) and model degree \( d_m \) are chosen independently. When \( d_m < d_f \) the model is misspecified (underfitting). When \( d_m > d_f \) the extra coefficients can fit noise (overfitting).</p>
+
+  <h3>What the axes mean</h3>
+  <p><strong>Main plot</strong></p>
+  <ul>
+    <li>Horizontal axis: input feature \( x \in [-1, 1] \).</li>
+    <li>Vertical axis: response \( y \).</li>
+  </ul>
+  <p>Blue markers: one training set of size \( N \). Black dashed curve: true polynomial \( f \). Orange curve: least-squares fit of degree \( d_m \). Optional green band: mean prediction ± one standard deviation across independent training sets.</p>
+
+  <p><strong>Bottom plot</strong></p>
+  <ul>
+    <li>Horizontal axis: model degree \( d_m \).</li>
+    <li>Vertical axis: bias², variance, and bias² + variance + \( \sigma^2 \), each averaged over \( x \).</li>
+  </ul>
+
+  <h3>Bias–variance decomposition</h3>
+  <p>For a fixed \( x \),</p>
+  <div class="math-block">$$ \mathbb{E}\bigl[(y - \hat{f}(x))^2\bigr] = \bigl(\mathbb{E}[\hat{f}(x)] - f(x)\bigr)^2 + \mathrm{Var}(\hat{f}(x)) + \sigma^2 $$</div>
+  <p>The expectation and variance are over the random training set.</p>
+  <ul>
+    <li><strong>Bias²</strong> is large when \( d_m \) is too small relative to \( d_f \) (the average fit cannot recover the true polynomial).</li>
+    <li><strong>Variance</strong> grows with \( d_m \) because higher-degree fits are more sensitive to the particular training sample.</li>
+    <li><strong>\( \sigma^2 \)</strong> is irreducible.</li>
+  </ul>
+  <p>Test error is typically minimized near \( d_m = d_f \).</p>
+
+  <h3>Monte Carlo estimation</h3>
+  <p>Bias and variance are estimated by drawing \( R \) independent training sets, fitting a degree-\( d_m \) polynomial on each, evaluating the fits on a dense grid, and computing sample mean and variance of the predictions at each grid point. Bias² is the squared difference between the mean prediction and true \( f(x) \). Results are averaged over the grid.</p>
+
+  <h3>Train MSE versus test MSE</h3>
+  <ul>
+    <li>Train MSE is computed on the points used for fitting; it decreases as \( d_m \) increases.</li>
+    <li>Test MSE is computed on a large independent test set; it reflects generalization and exhibits the classic U-shape.</li>
+  </ul>
+</div>
+</div>
+
+<div id="about" class="tab-content">
+<div class="about">
+  <h2>About</h2>
+  <p>This interactive playground was created for students in machine-learning courses at The University of Texas at San Antonio.</p>
+
+  <h3>Instructor</h3>
+  <div class="contact-block">
+    <strong>Panagiotis (Panos) Markopoulos, Ph.D.</strong><br>
+    Associate Professor and Cloud Technology Endowed Fellow<br>
+    Departments of Computer Engineering and Computer Science<br>
+    College of AI, Cyber and Computing<br>
+    The University of Texas at San Antonio<br><br>
+    Founding Director, <a href="https://www.milos-lab.org/" target="_blank" rel="noopener">MILOS Laboratory</a><br>
+    Thrust Lead, Trustworthy AI, MATRIX AI Consortium
+  </div>
+
+  <h3>Contact</h3>
+  <ul>
+    <li>Email: <a href="mailto:panagiotis.markopoulos@utsa.edu">panagiotis.markopoulos@utsa.edu</a></li>
+    <li>Personal site: <a href="https://markopoulos.us/" target="_blank" rel="noopener">markopoulos.us</a></li>
+    <li>College profile: <a href="https://caicc.utsa.edu/faculty/profiles/markopoulos-panagiotis.html" target="_blank" rel="noopener">caicc.utsa.edu</a></li>
+    <li>MILOS Lab: <a href="https://www.milos-lab.org/" target="_blank" rel="noopener">milos-lab.org</a></li>
+    <li>X: <a href="https://x.com/panos_markopo" target="_blank" rel="noopener">@panos_markopo</a></li>
+  </ul>
+
+  <h3>Copyright</h3>
+  <p>© 2026 Panagiotis Markopoulos. All rights reserved.</p>
+  <p>This educational tool is provided for classroom use. You may share the link with students. Redistribution or modification for commercial purposes requires permission.</p>
+  <p style="font-size:0.875rem; color:var(--text-muted);">Built as a self-contained client-side application (HTML + JavaScript + Plotly + KaTeX). No data leave the browser.</p>
+</div>
+</div>
+
+<footer>Bias–Variance Playground · Polynomial Regression · © 2026 Panagiotis Markopoulos</footer>
+
+<script>
+const X_MIN = -1, X_MAX = 1;
+let trueCoeffs = null;
+let trueDegreeCache = -1;
+
+function generateTrueCoeffs(degree) {
+  // Fixed but non-trivial coefficients for a given degree (reproducible)
+  const coeffs = [];
+  for (let k = 0; k <= degree; k++) {
+    // Deterministic pseudo-random based on degree and index
+    const seed = (degree * 17 + k * 31) % 1000;
+    const val = ((seed / 500) - 1) * (0.8 / (k + 1));
+    coeffs.push(val);
+  }
+  // Ensure leading coefficient is non-zero and reasonably sized
+  if (degree > 0) coeffs[degree] = (degree % 2 === 0 ? 1 : -1) * (0.6 + (degree % 3) * 0.15);
+  else coeffs[0] = 0.5;
+  return coeffs;
+}
+
+function trueF(x, degree) {
+  if (degree !== trueDegreeCache || !trueCoeffs) {
+    trueCoeffs = generateTrueCoeffs(degree);
+    trueDegreeCache = degree;
+  }
+  return evalPoly(x, trueCoeffs);
+}
+
+function polyFit(xs, ys, degree) {
+  if (degree < 0 || xs.length <= degree) return Array(degree + 1).fill(0);
+  const n = xs.length;
+  const d = degree + 1;
+  // Vandermonde matrix X (n × d)
+  const X = [];
+  for (let i = 0; i < n; i++) {
+    const row = [];
+    let p = 1;
+    for (let j = 0; j < d; j++) {
+      row.push(p);
+      p *= xs[i];
+    }
+    X.push(row);
+  }
+  try {
+    // Exact least-squares solution: a = pinv(X) * y
+    const ycol = ys.map(v => [v]);
+    const Xpinv = math.pinv(X);
+    const aMat = math.multiply(Xpinv, ycol);
+    return aMat.map(row => row[0]);
+  } catch (e) {
+    console.warn('Least-squares failed:', e);
+    return Array(d).fill(0);
+  }
+}
+
+function evalPoly(x, coeffs) {
+  let y = 0, p = 1;
+  for (const c of coeffs) { y += c * p; p *= x; }
+  return y;
+}
+
+function generateData(n, sigma, trueDegree) {
+  const xs = [], ys = [];
+  for (let i = 0; i < n; i++) {
+    const x = X_MIN + Math.random() * (X_MAX - X_MIN);
+    const u1 = Math.random(), u2 = Math.random();
+    const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+    xs.push(x);
+    ys.push(trueF(x, trueDegree) + sigma * z);
+  }
+  return {xs, ys};
+}
+
+function computeBiasVar(modelDegree, n, sigma, trueDegree, R, grid) {
+  const preds = Array(grid.length).fill(0).map(() => []);
+  for (let r = 0; r < R; r++) {
+    const data = generateData(n, sigma, trueDegree);
+    const coeffs = polyFit(data.xs, data.ys, modelDegree);
+    for (let i = 0; i < grid.length; i++) preds[i].push(evalPoly(grid[i], coeffs));
+  }
+  let sumBias2 = 0, sumVar = 0;
+  const meanPred = [], stdPred = [];
+  for (let i = 0; i < grid.length; i++) {
+    const arr = preds[i];
+    const mean = arr.reduce((a,b)=>a+b,0)/R;
+    const variance = arr.reduce((a,b)=>a+(b-mean)**2,0)/Math.max(1, R-1);
+    const trueY = trueF(grid[i], trueDegree);
+    const bias2 = (mean - trueY)**2;
+    sumBias2 += bias2;
+    sumVar += variance;
+    meanPred.push(mean);
+    stdPred.push(Math.sqrt(variance));
+  }
+  return {avgBias2: sumBias2 / grid.length, avgVar: sumVar / grid.length, meanPred, stdPred};
+}
+
+function updatePlots() {
+  const trueDegree = parseInt(document.getElementById('trueDegree').value);
+  const modelDegree = parseInt(document.getElementById('modelDegree').value);
+  const sigma = parseFloat(document.getElementById('sigma').value);
+  const n = parseInt(document.getElementById('nTrain').value);
+  const R = parseInt(document.getElementById('mcRuns').value);
+  const showBand = document.getElementById('showBand').checked;
+
+  document.getElementById('trueDegVal').textContent = trueDegree;
+  document.getElementById('modelDegVal').textContent = modelDegree;
+  document.getElementById('sigmaVal').textContent = sigma.toFixed(2);
+  document.getElementById('nVal').textContent = n;
+  document.getElementById('rVal').textContent = R;
+
+  const train = generateData(n, sigma, trueDegree);
+  const coeffs = polyFit(train.xs, train.ys, modelDegree);
+
+  const gridN = 160;
+  const grid = [];
+  for (let i = 0; i < gridN; i++) grid.push(X_MIN + i * (X_MAX - X_MIN) / (gridN - 1));
+  const trueCurve = grid.map(x => trueF(x, trueDegree));
+  const fitCurve = grid.map(x => evalPoly(x, coeffs));
+
+  const test = generateData(500, sigma, trueDegree);
+  const trainPred = train.xs.map(x => evalPoly(x, coeffs));
+  const testPred = test.xs.map(x => evalPoly(x, coeffs));
+  const trainMSE = train.ys.reduce((s, y, i) => s + (y - trainPred[i])**2, 0) / n;
+  const testMSE = test.ys.reduce((s, y, i) => s + (y - testPred[i])**2, 0) / test.ys.length;
+
+  const bv = computeBiasVar(modelDegree, n, sigma, trueDegree, R, grid);
+  const expected = bv.avgBias2 + bv.avgVar + sigma * sigma;
+
+  document.getElementById('metrics').innerHTML = `
+    <div><strong>Train MSE</strong> ${trainMSE.toFixed(4)}</div>
+    <div><strong>Test MSE</strong> ${testMSE.toFixed(4)}</div>
+    <div><strong>Avg Bias²</strong> ${bv.avgBias2.toFixed(4)}</div>
+    <div><strong>Avg Variance</strong> ${bv.avgVar.toFixed(4)}</div>
+    <div><strong>Noise \(\sigma^2\)</strong> ${(sigma*sigma).toFixed(4)}</div>
+    <div><strong>Bias² + Var + \(\sigma^2\)</strong> ${expected.toFixed(4)}</div>
+    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">True degree \(d_f = ${trueDegree}\), model degree \(d_m = ${modelDegree}\)</div>
+  `;
+
+  const traces = [
+    {x: train.xs, y: train.ys, mode: 'markers', name: 'Training data (N=' + n + ')', marker: {size: 7, color: '#2563eb'}},
+    {x: grid, y: trueCurve, mode: 'lines', name: 'True f (degree ' + trueDegree + ')', line: {color: '#111827', dash: 'dash', width: 2}},
+    {x: grid, y: fitCurve, mode: 'lines', name: 'Fitted model (degree ' + modelDegree + ')', line: {color: '#ea580c', width: 2.5}}
+  ];
+  if (showBand) {
+    traces.push({x: grid, y: bv.meanPred, mode: 'lines', name: 'Mean prediction (MC)', line: {color: '#059669', width: 1.5}});
+    traces.push({
+      x: grid.concat(grid.slice().reverse()),
+      y: bv.meanPred.map((m,i) => m + bv.stdPred[i]).concat(bv.meanPred.map((m,i) => m - bv.stdPred[i]).reverse()),
+      fill: 'toself', fillcolor: 'rgba(5,150,105,0.12)', line: {color: 'transparent'},
+      name: '±1 std (MC)', showlegend: true
+    });
+  }
+  Plotly.newPlot('mainPlot', traces, {
+    title: {text: 'Training data, true polynomial, and fitted model', font: {size: 15, family: 'Inter'}},
+    xaxis: {title: {text: 'x (input feature)', font: {size: 12}}, range: [X_MIN - 0.04, X_MAX + 0.04], gridcolor: '#f3f4f6'},
+    yaxis: {title: {text: 'y (response)', font: {size: 12}}, gridcolor: '#f3f4f6'},
+    margin: {t: 48, r: 20, b: 52, l: 56},
+    legend: {x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)'},
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    font: {family: 'Inter', size: 12}
+  }, {responsive: true, displayModeBar: false});
+
+  const complexities = [], bias2s = [], vars = [], totals = [];
+  const maxD = Math.min(8, n - 2);
+  for (let d = 0; d <= maxD; d++) {
+    complexities.push(d);
+    const res = computeBiasVar(d, n, sigma, trueDegree, Math.max(8, Math.floor(R / 2)), grid);
+    bias2s.push(res.avgBias2);
+    vars.push(res.avgVar);
+    totals.push(res.avgBias2 + res.avgVar + sigma * sigma);
+  }
+  Plotly.newPlot('bvPlot', [
+    {x: complexities, y: bias2s, mode: 'lines+markers', name: 'Bias²', line: {color: '#dc2626', width: 2}, marker: {size: 6}},
+    {x: complexities, y: vars, mode: 'lines+markers', name: 'Variance', line: {color: '#7c3aed', width: 2}, marker: {size: 6}},
+    {x: complexities, y: totals, mode: 'lines+markers', name: 'Bias² + Var + σ²', line: {color: '#059669', width: 2.5}, marker: {size: 6}}
+  ], {
+    title: {text: 'Bias–variance trade-off versus model degree (true degree = ' + trueDegree + ')', font: {size: 15, family: 'Inter'}},
+    xaxis: {title: {text: 'Model degree \( d_m \)', font: {size: 12}}, gridcolor: '#f3f4f6', dtick: 1},
+    yaxis: {title: {text: 'Error component (averaged over x)', font: {size: 12}}, gridcolor: '#f3f4f6'},
+    margin: {t: 48, r: 20, b: 52, l: 56},
+    legend: {x: 0.02, y: 0.98, bgcolor: 'rgba(255,255,255,0.85)'},
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    font: {family: 'Inter', size: 12}
+  }, {responsive: true, displayModeBar: false});
+}
+
+document.getElementById('regen').addEventListener('click', updatePlots);
+['trueDegree','modelDegree','sigma','nTrain','mcRuns','showBand'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('input', updatePlots);
+  el.addEventListener('change', updatePlots);
+});
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+    if (window.renderMathInElement) renderMathInElement(document.getElementById(btn.dataset.tab));
+  });
+});
+
+updatePlots();
+</script>
+</body>
+</html>
