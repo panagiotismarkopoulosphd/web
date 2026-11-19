@@ -5,9 +5,93 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>P. Markopoulos, PhD</title>
-  <link rel="stylesheet" href="cvweb.css">
+  <style>
+:root {
+  --bg: #ffffff;
+  --text: #222;
+  --link: #1a5fb4;
+  --heading: #022b6d;
+  --border: #ddd;
+  --nav-bg: #f7f7f7;
+  --accent: #022b6d;
+}
+body.dark {
+  --bg: #121212;
+  --text: #e0e0e0;
+  --link: #8ab4f8;
+  --heading: #a8c7fa;
+  --border: #333;
+  --nav-bg: #1e1e1e;
+  --accent: #a8c7fa;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Linux Libertine", "Liberation Serif", "Times New Roman", serif;
+  line-height: 1.45;
+  margin: 0;
+  padding: 0;
+  transition: background 0.2s, color 0.2s;
+}
+a { color: var(--link); }
+h1, h2, h3 { color: var(--heading); }
+#layout-menu {
+  background: var(--nav-bg);
+  border-right: 1px solid var(--border);
+}
+.theme-controls {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.theme-controls button, .export-btn, #pub-search {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: var(--nav-bg);
+  color: var(--text);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.theme-controls button:hover, .export-btn:hover { opacity: 0.85; }
+#pub-search-container {
+  margin: 1em 0;
+  padding: 8px 0;
+}
+#pub-search { width: 320px; max-width: 100%; }
+.pub-item.hidden { display: none; }
+@media print {
+  .theme-controls, #layout-menu, .mobile-nav, #pub-search-container, .export-controls { display: none !important; }
+  body { background: white; color: black; }
+  a { color: black; text-decoration: none; }
+  #layout-content { margin: 0; }
+}
+
+#layout-menu a { display: block; padding: 4px 8px; text-decoration: none; }
+#layout-content { margin-left: 180px; padding: 1.5em; max-width: 900px; }
+@media (max-width: 800px) {
+  #layout-menu { display: none; }
+  #layout-content { margin-left: 0; }
+}
+@media print {
+  #layout-content { margin: 0; padding: 0; }
+  body.print-resume #sec\:research,
+  body.print-resume #sec\:presentations,
+  body.print-resume #sec\:service,
+  body.print-resume #sec\:grants { display: none; }
+}
+</style>
 </head>
 <body>
+
+<div class="theme-controls">
+  <button id="theme-toggle" title="Toggle bright/dark mode">🌙 Dark</button>
+</div>
+
 
 
 <input type="checkbox" id="menu-toggle" class="menu-toggle">
@@ -336,6 +420,15 @@ Success Summit, Rice University, Mar. 2026</p></li>
 Doctoral Dissertation Award</strong> (university-wide), Rochester
 Institute of Technology, Apr. 2023</p></li>
 </ul>
+
+<div class="export-controls" style="margin: 1em 0;">
+  <button class="export-btn" onclick="window.print()">Print / Save as PDF (full page)</button>
+  <button class="export-btn" onclick="exportCV()">Export Full CV (print view)</button>
+  <button class="export-btn" onclick="exportResume()">Export Resume (print view)</button>
+</div>
+<div id="pub-search-container">
+  <input type="text" id="pub-search" placeholder="Search publications by author, year, keyword…">
+</div>
 <h1 id="sec:research">Publications</h1>
 <p>Publication metrics (as of Nov. 18, 2026):</p>
 <ul>
@@ -1540,5 +1633,51 @@ RIT, 2019</p></li>
     });
   });
 </script>
+
+<script>
+const themeBtn = document.getElementById('theme-toggle');
+const saved = localStorage.getItem('theme') || 'light';
+if (saved === 'dark') {
+  document.body.classList.add('dark');
+  themeBtn.textContent = '☀️ Bright';
+}
+themeBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  themeBtn.textContent = isDark ? '☀️ Bright' : '🌙 Dark';
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
+
+const searchInput = document.getElementById('pub-search');
+if (searchInput) {
+  searchInput.addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    const items = document.querySelectorAll('#sec\:research ~ ol > li, #sec\:research + * ol > li, ol li');
+    // Broader: all ordered list items after the publications heading
+    document.querySelectorAll('ol > li').forEach(li => {
+      const text = li.innerText.toLowerCase();
+      li.classList.toggle('hidden', q && !text.includes(q));
+    });
+  });
+}
+
+function exportCV() {
+  document.body.classList.add('print-cv');
+  window.print();
+  setTimeout(() => document.body.classList.remove('print-cv'), 500);
+}
+function exportResume() {
+  document.body.classList.add('print-resume');
+  // Optionally hide long sections for resume
+  const long = document.querySelectorAll('#sec\:research, #sec\:presentations, #sec\:service');
+  long.forEach(el => el.style.display = 'none');
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove('print-resume');
+    long.forEach(el => el.style.display = '');
+  }, 500);
+}
+</script>
+
 </body>
 </html>
