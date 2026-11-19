@@ -6,7 +6,7 @@
   <title>Panagiotis Markopoulos, Ph.D.</title>
   <style>
 :root {
-  --bg: #efefef;
+  --bg: #ffffff;
   --text: #1a1a1a;
   --heading: #022b6d;
   --link: #1a5fb4;
@@ -30,7 +30,7 @@ body.dark {
 body.dark h1, body.dark h2, body.dark strong { color: var(--heading); }
 body.dark a { color: var(--link); }
 * { box-sizing: border-box; }
-body {
+body { padding-top: 48px;
   margin: 0;
   font-family: "Charter", "Bitstream Charter", "Liberation Serif", Georgia, serif;
   background: var(--bg);
@@ -38,13 +38,13 @@ body {
   line-height: 1.5;
   transition: background 0.2s, color 0.2s;
 }
-a { color: var(--link); text-decoration: none; }
+a { color: var(--link); text-decoration: underline; }
 a:hover { text-decoration: underline; }
 h1 {
   scroll-margin-top: 60px;
   font-size: 1.35em;
   color: var(--heading);
-  border-bottom: 1.5px solid var(--accent);
+  
   padding-bottom: 0.2em;
   margin-top: 1.6em;
 }
@@ -53,7 +53,7 @@ img { max-width: 100%; height: auto; }
 
 /* Top bar */
 .topbar {
-  position: sticky;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   top: 0;
   z-index: 100;
   display: flex;
@@ -126,7 +126,7 @@ body.dark #toptitle strong { color: #e0ecff; }
 
 /* Mobile */
 .menu-toggle { display: none; }
-.mobile-nav { display: none; }
+.mobile-nav { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 100; }
 @media (max-width: 900px) {
   .layout { flex-direction: column; }
   #layout-menu {
@@ -152,7 +152,7 @@ body.dark #toptitle strong { color: #e0ecff; }
 /* Print / PDF styles aiming for clean academic CV look */
 @media print {
   .topbar, #layout-menu, .mobile-nav, #pub-search-container { display: none !important; }
-  body { background: white; color: black; font-size: 10.5pt; }
+  body { padding-top: 48px; background: white; color: black; font-size: 10.5pt; }
   .layout { display: block; }
   #layout-content { margin: 0; padding: 0; max-width: none; }
   a { color: black; text-decoration: none; }
@@ -178,7 +178,7 @@ body.dark #toptitle strong { color: #e0ecff; }
 @media print {
   .section-search, .topbar, #layout-menu, .mobile-nav, #back-top { display: none !important; }
   img { display: none !important; }
-  body { font-family: "Times New Roman", Times, serif !important; color: black !important; }
+  body { padding-top: 48px; font-family: "Times New Roman", Times, serif !important; color: black !important; }
   a, h1, h2, strong { color: black !important; }
   body.print-pubs [id^="sec:"]:not(#sec\:research) { display: none !important; }
   @page {
@@ -201,7 +201,7 @@ body.dark .cv-table small { color:#aaa; }
 
 /* Screen-only polish */
 @media screen {
-  body { background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%); }
+  body { padding-top: 48px; background: linear-gradient(180deg, var(--bg) 0%, var(--bg) 100%); }
   #layout-menu {
     background: var(--nav-bg);
     border-right: 1px solid var(--border);
@@ -266,8 +266,8 @@ body.dark .cv-table small { color:#aaa; }
     height: 40px;
     border-radius: 50%;
     border: 1px solid var(--border);
-    background: var(--nav-bg);
-    color: var(--text);
+    background: var(--accent);
+    color: white;
     cursor: pointer;
     display: none;
     align-items: center;
@@ -277,7 +277,7 @@ body.dark .cv-table small { color:#aaa; }
     box-shadow: 0 2px 8px rgba(0,0,0,0.12);
   }
   #back-top.visible { display: flex; }
-  #back-top:hover { background: var(--card); }
+  #back-top:hover { background: var(--link); }
   /* Slightly better list readability */
   ol, ul { padding-left: 1.4em; }
   /* Active menu hint */
@@ -300,7 +300,7 @@ body.dark .cv-table small { color:#aaa; }
     width: 60px;
     height: 3px;
     background: var(--accent);
-    margin: 8px auto 0;
+    margin: 8px 0 0;
     border-radius: 2px;
   }
   /* Subtle hover on list items in long sections */
@@ -346,6 +346,16 @@ body.dark .cv-table small { color:#aaa; }
   /* Slightly better table header contrast */
   .cv-table th { font-size: 0.9em; letter-spacing: 0.02em; }
 }
+
+.stat-box {
+  background: var(--card);
+  border-left: 3px solid var(--accent);
+  padding: 12px 16px;
+  margin: 12px 0 16px;
+  border-radius: 4px;
+  
+}
+.stat-box strong { color: var(--heading); }
 </style>
 </head>
 <body>
@@ -353,6 +363,7 @@ body.dark .cv-table small { color:#aaa; }
 <div class="topbar">
   <button id="theme-toggle" title="Toggle theme">🌙</button>
   <button onclick="exportCV()">Export CV (PDF)</button>
+    <button onclick="exportCVTxt()">Export CV (TXT)</button>
 </div>
 <div class="mobile-nav">
   <label for="menu-toggle" id="hamburger-btn">☰ Menu</label>
@@ -367,21 +378,27 @@ body.dark .cv-table small { color:#aaa; }
     <a href="#sec:member" target="_blank" rel="noopener noreferrer">Memberships</a>
     <a href="#sec:awards" target="_blank" rel="noopener noreferrer">Awards & Honors</a>
     <a href="#sec:research" target="_blank" rel="noopener noreferrer">Publications</a>
-    <a href="#sec:presentations" target="_blank" rel="noopener noreferrer">Talks & Panels</a>
+    <a href="#sec:presentations" target="_blank" rel="noopener noreferrer">Invited Talks, Panels, and Tutorials</a>
     <a href="#sec:ip" target="_blank" rel="noopener noreferrer">Patents</a>
     <a href="#sec:grants" target="_blank" rel="noopener noreferrer">Funding</a>
     <a href="#sec:teaching" target="_blank" rel="noopener noreferrer">Teaching</a>
     <a href="#sec:team" target="_blank" rel="noopener noreferrer">Mentoring</a>
     <a href="#sec:service" target="_blank" rel="noopener noreferrer">Service</a>
-  </nav>
+  
+  <div style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border);">
+    <a href="https://www.linkedin.com/in/panagiotis-panos-markopoulos-phd-750b5842/" target="_blank">LinkedIn</a>
+    <a href="https://scholar.google.com/citations?user=8NPXGZkAAAAJ" target="_blank">Google Scholar</a>
+    <a href="https://orcid.org/0000-0001-9686-779X" target="_blank">ORCID</a>
+  </div>
+</nav>
   <div id="layout-content">
-<div id="toptitle" style="text-align:center;">
+<div style="display:flex; align-items:flex-start; gap:24px; margin-bottom:1.5em;">
+<img src="./markopoulos.png" alt="Dr. Panagiotis Markopoulos" style="width:130px; border-radius:6px; box-shadow:0 2px 10px rgba(0,0,0,0.12); flex-shrink:0;">
+<div>
+<div id="toptitle">
   <span><strong>Panagiotis Markopoulos, Ph.D.</strong></span>
 </div>
-
-<p style="text-align:center;"><img src="./markopoulos.png" alt="Dr. Panagiotis Markopoulos" style="width:14em"></p>
-
-<p style="text-align:center;">
+<p style="margin:0.2em 0 0;">
   Associate Professor, Departments of
   <a href="https://caicc.utsa.edu/computer-engineering/" target="_blank" rel="noopener noreferrer">Computer Engineering</a>
   and
@@ -398,7 +415,7 @@ body.dark .cv-table small { color:#aaa; }
   <a href="https://utsa.edu/" target="_blank" rel="noopener noreferrer">
     The University of Texas at San Antonio
   </a>
-</p>
+</p></div></div>
   
 
 
@@ -412,7 +429,7 @@ body.dark .cv-table small { color:#aaa; }
 <li>
   <p>Links: 
   <a href="https://caicc.utsa.edu/faculty/profiles/markopoulos-panagiotis.html" target="_blank" rel="noopener noreferrer">College Profile</a>;
-  <a href="https://markopoulos.us/" target="_blank" rel="noopener noreferrer">Personal Web</a>;
+  
   <a href="https://www.linkedin.com/in/panagiotis-panos-markopoulos-phd-750b5842/" target="_blank" rel="noopener noreferrer">LinkedIn</a>; 
   <a href="https://orcid.org/0000-0001-9686-779X" target="_blank" rel="noopener noreferrer">ORCID</a>; 
   <a href="https://scholar.google.com/citations?user=8NPXGZkAAAAJ&hl=en" target="_blank" rel="noopener noreferrer">Google Scholar</a>
@@ -446,9 +463,9 @@ M.Sc. degrees, both in Electronic and Computer Engineering, from the
 Technical University of Crete, Greece, in 2010 and 2012,
 respectively.</p>
 <h1 id="sec:areas">Research Areas</h1>
-<p><u><strong>Technical Domains</strong></u></p>
+<p>Technical Domains</p>
 <ul>
-<li><p><u><strong>Machine Learning</strong></u> (statistical learning
+<li><p><strong>Machine Learning</strong> (statistical learning
 and deep learning). Topics include: Robust and trustworthy learning from
 challenging data (e.g., limited, high-dimensional, corrupted,
 imbalanced); continual learning (adaptive learning from streaming data
@@ -456,40 +473,40 @@ in evolving environments, mitigating catastrophic forgetting); federated
 learning (privacy-preserving learning from distributed datasets);
 computationally efficient learning and inference for edge-AI
 deployments.</p></li>
-<li><p><u><strong>Signal Processing</strong></u>. Topics include:
+<li><p><strong>Signal Processing</strong>. Topics include:
 Statistical and adaptive signal processing; stochastic and numerical
 optimization; sensor array processing; robust subspace estimation and
 adaptation (e.g., Lp-PCA methods); multi-linear algebra and tensor
 methods (e.g., robust L1-norm Tucker/PARAFAC decompositions and dynamic
 tensor factorization for compact, compressed, and adaptive neural
 networks).</p></li>
-<li><p><u><strong>Wireless Communications and Sensing</strong></u>.
+<li><p><strong>Wireless Communications and Sensing</strong>.
 Topics include: Radar and localization; physical-layer wireless
 communications (smart antennas, adaptive filtering, beamforming,
 spread-spectrum waveform design, channel estimation and equalization,
 interference suppression, symbol modulation/detection/estimation,
 resource allocation, multiplexing, multi-user MIMO).</p></li>
-<li><p><u><strong>Computer Vision and Remote Sensing</strong></u>.
+<li><p><strong>Computer Vision and Remote Sensing</strong>.
 Topics include: image denoising, segmentation, classification;
 multi-scale and rotation-invariant object detection and tracking; fusion
 of multi-modal imagery (e.g., hyperspectral, EO, SAR).</p></li>
-<li><p><u><strong>Quantum Computing</strong></u>. Topics include: hybrid
+<li><p><strong>Quantum Computing</strong>. Topics include: hybrid
 quantum-classical methods for machine learning; adaptive task
 distribution between quantum and classical resources; quantum annealing
 for combinatorial optimization in machine learning and signal
 processing.</p></li>
 </ul>
-<p><u><strong>Selected Application Domains</strong></u></p>
+<p>Selected Application Domains</p>
 <ul>
-<li><p><u><strong>Defense and National Security</strong></u>: Radar and
+<li><p><strong>Defense and National Security</strong>: Radar and
 RF systems; remote sensing and geospatial intelligence; computer vision
 for surveillance and target detection and tracking; robust machine
 learning for mission-critical decision-support.</p></li>
-<li><p><u><strong>Autonomous and Networked AI Systems</strong></u>:
+<li><p><strong>Autonomous and Networked AI Systems</strong>:
 Perception, connectivity, and navigation for autonomous platforms;
 multi-modal sensor fusion; adaptive and distributed learning over
 edge-AI deployments; secured autonomy.</p></li>
-<li><p><u><strong>Healthcare and Biomedical Sensing</strong></u>:
+<li><p><strong>Healthcare and Biomedical Sensing</strong>:
 machine learning for medical and behavioral-health data; wearable and
 gait sensing; radar- and sensor-based human activity recognition;
 privacy-preserving and federated learning in healthcare and clinical
@@ -497,27 +514,27 @@ research environments.</p></li>
 </ul>
 <h1 id="sec:education">Education</h1>
 <ul>
-<li><p><strong>Ph.D., Electrical Engineering</strong>, 2015<br />
+<li><p>Ph.D., Electrical Engineering, 2015<br />
 University at Buffalo (UB), The State University of New York, Buffalo,
 NY, USA<br />
 <em>Dissertation title:</em> “Optimal Algorithms for L1-norm Principal
 Component Analysis: New Tools for Signal Processing and Machine Learning
 with Few and Faulty Training Data”</p></li>
-<li><p><strong>M.S., Electronic &amp; Computer Engineering</strong>, 
+<li><p>M.S., Electronic &amp; Computer Engineering, 
 2012<br />
 Technical University of Crete (TUC), Chania, Crete, Greece<br />
 <em>Thesis title:</em> “Full-rate Differential M-PSK Alamouti Modulation
 with Polynomial-complexity Maximum-likelihood Noncoherent
 Detection”</p></li>
-<li><p><strong>Engineering Diploma (5-years), Electronic &amp; Computer
-Engineering</strong>, 2010<br />
+<li><p>Engineering Diploma (5-years), Electronic &amp; Computer
+Engineering, 2010<br />
 Technical University of Crete (TUC), Chania, Crete, Greece<br />
 <em>Thesis title:</em> “Maximum-Likelihood Noncoherent M-PSK OSTBC
 Detection with Polynomial Complexity”</p></li>
 </ul>
 <h1 id="sec:employment">Employment</h1>
 <ul>
-<li><p><strong>Associate Professor</strong>, Sept. 2025 - Present.<br />
+<li><p>Associate Professor, Sept. 2025 - Present.<br />
 Depts. of Computer Engineering (CE) and Computer Science (CS)<br />
 College of AI, Cyber and Computing (CAICC)<br />
 The University of Texas at San Antonio<br />
@@ -534,38 +551,38 @@ Engineering</p></li>
 program, UT San Antonio Main Campus and Health Science Center)</p></li>
 <li><p>Cloud Technology Endowed Fellow, awarded by the Office of the Provost, 2025 - 2026.</p></li>
 </ul></li>
-<li><p><strong>Associate Professor and Margie and Bill Klesse Endowed
-Professor</strong> 2022 – 2025<br />
+<li><p>Associate Professor and Margie and Bill Klesse Endowed
+Professor 2022 – 2025<br />
 Depts. of Electrical &amp; Computer Engineering (CE) and Computer
 Science (CS)<br />
 Klesse College of Engineering and Integrated Design (KCEID)<br />
 The University of Texas at San Antonio<br />
 San Antonio, TX</p></li>
-<li><p><strong>Associate Professor (with Tenure)</strong>
+<li><p>Associate Professor (with Tenure)
 2021 – 2022<br />
 Dept. of Electrical and Microelectronic Engineering (EME)<br />
 Kate Gleason College of Engineering (KGCOE)<br />
 Rochester Institute of Technology (RIT)<br />
 Rochester, NY</p></li>
-<li><p><strong>Assistant Professor (Tenure Track)</strong>
+<li><p>Assistant Professor (Tenure Track)
 2015 – 2021<br />
 Dept. of Electrical and Microelectronic Engineering (EME)<br />
 Kate Gleason College of Engineering (KGCOE)<br />
 Rochester Institute of Technology (RIT)<br />
 Rochester, NY</p></li>
-<li><p><strong>Visiting Summer Faculty (Independent Contractor)</strong>
+<li><p>Visiting Summer Faculty (Independent Contractor)
 2018, 2020, 2021<br />
 Information Directorate (contract with Griffiss Institute Inc.)<br />
 U.S. Air Force Research Laboratory (Air Force Research Laboratory)<br />
 Rome, NY</p></li>
-<li><p><strong>Graduate Research Assistant</strong> 2011 – 2015<br />
+<li><p>Graduate Research Assistant 2011 – 2015<br />
 Dept. of Electrical Engineering<br />
 School of Engineering and Applied Sciences<br />
 University at Buffalo (UB), The State University of New York<br />
 Buffalo, NY</p></li>
 </ul>
 <h1 id="sec:member">Memberships</h1>
-<p><u><strong>Professional Society Memberships</strong></u></p>
+<p><u>Professional Society Memberships</u></p>
 <ul>
 <li><p>Senior Member, IEEE (Societies: Signal Processing, Computer,
 Education)</p></li>
@@ -582,67 +599,67 @@ Society</p></li>
 <h1 id="sec:awards">Awards &amp; Honors</h1>
 <div class="section-search"><input type="text" class="section-search-input" data-section="sec:awards" placeholder="Search awards…"></div>
 
-<p><u><strong>Professional Honors and Major Awards</strong></u></p>
+<p><u>Professional Honors and Major Awards</u></p>
 <ul>
-<li><p><strong>Elected</strong> Full Member, Sigma Xi, The Scientific
+<li><p>Elected Full Member, Sigma Xi, The Scientific
 Research Honor Society, 2026</p></li>
-<li><p><strong>Elected</strong> Member, IEEE-Eta Kappa Nu (IEEE-HKN),
+<li><p>Elected Member, IEEE-Eta Kappa Nu (IEEE-HKN),
 The Honor Society of IEEE, 2026</p></li>
-<li><p><strong>Awarded</strong> MATRIX Summer Fellowship, UTSA AI
+<li><p>Awarded MATRIX Summer Fellowship, UTSA AI
 Consortium for Human Well-Being, in support of leadership of the
 Trustworthy AI thrust and National Science Foundation AI Institute positioning, 2026</p></li>
-<li><p><strong>Awarded</strong> the Cloud Technology Endowed Fellowship,
+<li><p>Awarded the Cloud Technology Endowed Fellowship,
 Office of the Provost, UT San Antonio, Sept. 2025 - Sept. 2026</p></li>
-<li><p><strong>Selected</strong> as UT San Antonio representative for
+<li><p>Selected as UT San Antonio representative for
 the Faculty Research Immersive Program with Tec de Monterrey, Jun.
 2025</p></li>
-<li><p><strong>Nominated</strong> for the University Excellence Award
+<li><p>Nominated for the University Excellence Award
 (Innovation and Impact), UT San Antonio, May 2025</p></li>
-<li><p><strong>Awarded</strong> the Margie and Bill Klesse Endowed
+<li><p>Awarded the Margie and Bill Klesse Endowed
 Professorship, Klesse College of Engineering and Integrated Design, UT
 San Antonio, 2022 – 2025 (three consecutive years)</p></li>
-<li><p><strong>Awarded</strong> the UT System STARs Program Award, Board
+<li><p>Awarded the UT System STARs Program Award, Board
 of Regents, University of Texas System, 2022</p></li>
-<li><p><strong>Elevated</strong> to IEEE Senior Member, 2022</p></li>
-<li><p><strong>Awarded</strong> the Air Force Office of Scientific Research Young Investigator Program
+<li><p>Elevated to IEEE Senior Member, 2022</p></li>
+<li><p>Awarded the Air Force Office of Scientific Research Young Investigator Program
 (YIP) Award, U.S. Air Force Office of Scientific Research, 2019</p></li>
-<li><p><strong>Awarded</strong> the Exemplary Performance in Research
+<li><p>Awarded the Exemplary Performance in Research
 Award, Kate Gleason College of Engineering, Rochester Institute of
 Technology, 2019 (for proposals submitted in 2018)</p></li>
-<li><p><strong>Awarded</strong> the Exemplary Performance in Teaching
+<li><p>Awarded the Exemplary Performance in Teaching
 Award, Kate Gleason College of Engineering, Rochester Institute of
 Technology, 2019</p></li>
-<li><p><strong>Awarded</strong> the Exemplary Performance in Research
+<li><p>Awarded the Exemplary Performance in Research
 Award, Kate Gleason College of Engineering, Rochester Institute of
 Technology, 2018 (for proposals submitted in 2017)</p></li>
-<li><p><strong>Awarded</strong> the Exemplary Reviewer Award, IEEE
+<li><p>Awarded the Exemplary Reviewer Award, IEEE
 Communications Society, 2017</p></li>
-<li><p><strong>Awarded</strong> the “Great Moment for Education” Award,
+<li><p>Awarded the “Great Moment for Education” Award,
 Eurobank EFG (high-school top-scoring graduate in the Greek Panhellenic
 university admission examinations), Oct. 2004</p></li>
 </ul>
-<p><u><strong>Paper Awards</strong></u></p>
+<p><u>Paper Awards</u></p>
 <ul>
-<li><p><strong>Awarded</strong> the Distinguished Conference Paper Award
+<li><p>Awarded the Distinguished Conference Paper Award
 for “Robust Federated Learning via Stable Cosine Similarity,” IEEE
 International Carnahan Conference on Security Technology (ICCST),
 2025</p></li>
-<li><p><strong>Awarded</strong> the Runner-Up Poster Award for “Gait
+<li><p>Awarded the Runner-Up Poster Award for “Gait
 Recognition Based on Tensor Analysis of Acceleration Data from Wearable
 Sensors,” IEEE Western New York Image and Signal Processing Workshop,
 2018</p></li>
-<li><p><strong>Awarded</strong> a Student Travel Grant, SPIE Defense and
+<li><p>Awarded a Student Travel Grant, SPIE Defense and
 Commercial Sensing, 2017 (for “Adaptive Sparse-Binary Waveform Design
 for All-Spectrum Channelization”)</p></li>
-<li><p><strong>Awarded</strong> a Student Travel Grant, SPIE Defense,
+<li><p>Awarded a Student Travel Grant, SPIE Defense,
 Security, and Sensing, 2014 (for “Direction Finding with L1-Norm
 Subspaces”)</p></li>
-<li><p><strong>Awarded</strong> the Best Paper Award in Physical Layer
+<li><p>Awarded the Best Paper Award in Physical Layer
 Communications and Signal Processing for “Some Options for L1-Subspace
 Signal Processing,” IEEE International Symposium on Wireless
 Communication Systems (ISWCS), 2013</p></li>
 </ul>
-<p><u><strong>Selected Advisee Distinctions</strong></u></p>
+<p><u>Selected Advisee Distinctions</u></p>
 <ul>
 <li><p>Ph.D. advisee Rakib Ul Haque received the <strong>the Distinguished Conference Paper Award </strong>
 for our paper “Robust Federated Learning via Stable Cosine Similarity,” IEEE
@@ -658,13 +675,11 @@ Institute of Technology, Apr. 2023</p></li>
 <h1 id="sec:research">Publications</h1>
 <div class="section-search"><input type="text" class="section-search-input" data-section="sec:research" placeholder="Search publications by author, year, keyword…"></div>
 
-<p>Publication metrics (as of Nov. 18, 2026):</p>
-<ul>
-<li><p><strong>Journals:</strong> 25 published (+ multiple under review, not listed here)</p></li>
-<li><p><strong>Refereed Conference Papers:</strong> 67</p></li>
-<li><p><strong>Total Citations:</strong> 1,886 (1,156 since 2021);
-<strong>H-index:</strong> 21; <strong>i10-index:</strong> 43</p></li>
-</ul>
+<div class="stat-box">
+<strong>25</strong> journal articles | <strong>67</strong> refereed conference papers<br>
+<strong>1,886</strong> citations (1,156 since 2021) | h-index <strong>21</strong> | i10-index <strong>43</strong><br>
+<span style="color:var(--muted);">As of November 2026. Multiple papers under review not listed.</span>
+</div>
 <p><u><strong>Journal Articles (Refereed)</strong></u><br />
 <em>Advisees are marked with
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>†</mo></msup><annotation encoding="application/x-tex">^\dag</annotation></semantics></math>).</em></p>
@@ -859,8 +874,8 @@ Jul.  2026.</p></li>
 <li><p>V. T. Nguyen<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mrow><mi>†</mi><mo>,</mo><mi>‡</mi></mrow></msup><annotation encoding="application/x-tex">^{\dag,\ddag}</annotation></semantics></math>,
 M. Dhanaraj<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>†</mo></msup><annotation encoding="application/x-tex">^\dag</annotation></semantics></math>,
 and <strong>P. Markopoulos</strong>, “Depth- and Rank-Selective
-Multilinear Transformation Layers for Compact CNNs,” 
-in <em>Proc. 60th Asilomar Conf. Signals, Syst., Comput.</em>, Oct. 25-28, 2026.</p></li>
+Multilinear Transformation Layers for Compact CNNs,” accepted to appear
+in <em>Proc. 60th Asilomar Conf. Signals, Syst., Comput.</em>, 2026.</p></li>
 <li><p>R. U. Haque<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mrow><mi>†</mi><mo>,</mo><mi>‡</mi></mrow></msup><annotation encoding="application/x-tex">^{\dag,\ddag}</annotation></semantics></math>
 and <strong>P. Markopoulos</strong>, “Robust Federated Learning via
 Stable Cosine Similarity,” in <em>Proc. 2025 IEEE Int. Carnahan
@@ -1348,7 +1363,7 @@ Applications</em>, F. Fioranelli, M. Ritchie, A. Balleri, and
 H. Griffiths, Eds. IET Press, 2020.<br />
 DOI: <a
 href="https://doi.org/10.1049/SBRA531E_ch11" target="_blank" rel="noopener noreferrer">10.1049/SBRA531E_ch11</a></p></li>
-<li><p><strong>P. Markopoulos</strong>, S. Kundu, S. Chamadia,
+<li><p>P. Markopoulos, S. Kundu, S. Chamadia,
 N. Tsagkarakis, and D. A. Pados, “Outlier-Resistant Data Processing with
 L1-norm Principal Component Analysis,” in <em>Advances in Principal
 Component Analysis: Research and Development</em>, G. R. Naik,
@@ -1357,113 +1372,113 @@ DOI: <a
 href="https://doi.org/10.1007/978-981-10-6704-4_6" target="_blank" rel="noopener noreferrer">10.1007/978-981-10-6704-4_6</a></p></li>
 </ol>
 <h1 id="sec:presentations">Talks &amp; Tutorials</h1>
-<div class="section-search"><input type="text" class="section-search-input" data-section="sec:presentations" placeholder="Search talks and tutorials…"></div>
+<div class="section-search"><input type="text" class="section-search-input" data-section="sec:presentations" placeholder="Search invited talks, panels, and tutorials…"></div>
 
-<p><u><strong>Refereed Conference Presentations</strong></u><br />
+<p><u>Refereed Conference Presentations</u><br />
 <em>All presentations associated with refereed conference papers are
 listed in detail above, under subsection “Conference Proceeding Articles
 (Refereed)”, where the presenter is marked with
 (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>‡</mo></msup><annotation encoding="application/x-tex">^\ddag</annotation></semantics></math>).</em></p>
 <p><u><strong>Invited Talks and Panels</strong></u></p>
 <ol>
-<li><p><strong>P. Markopoulos</strong>, Panelist, “Distinguished Panel: Quantum in Academia,” Quantum Student Success Summit (QS3) 2026, Rice University, Houston, TX, 2026. Panelists: V. Bulchandani (Rice), L. Fan (University of Houston), P. Markopoulos (UT San Antonio). <a href="https://sites.google.com/view/qs3-2026/home" target="_blank" rel="noopener noreferrer">Event page</a>.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for Efficient,
+<li><p>P. Markopoulos, Panelist, “Distinguished Panel: Quantum in Academia,” Quantum Student Success Summit (QS3) 2026, Rice University, Houston, TX, 2026. Panelists: V. Bulchandani (Rice), L. Fan (University of Houston), P. Markopoulos (UT San Antonio). <a href="https://sites.google.com/view/qs3-2026/home" target="_blank" rel="noopener noreferrer">Event page</a>.</p></li>
+<li><p>P. Markopoulos, “Tensor Methods for Efficient,
 Robust, and Continual Machine Learning,” presented at GRDS-SPIE Seminar,
 Univ. of Texas at Rio Grande Valley, Apr. 2026.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Towards Trustworthy and
+<li><p>P. Markopoulos, “Towards Trustworthy and
 Privacy-Preserving Federated Learning: Methods, Challenges, and
 Applications,” presented at Biomedical Engineering (BME) Seminar Series,
 UT San Antonio, San Antonio, TX, Oct. 2025.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Quantum Computing at The
+<li><p>P. Markopoulos, “Quantum Computing at The
 University of Texas at San Antonio,” presented at First Texas Quantum
 Summit, Texas A&amp;M Univ., College Station, TX, Sept. 2025.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Advances in Robust and
+<li><p>P. Markopoulos, “Advances in Robust and
 Efficient Machine Learning for National Security,” presented at Dept. of
 Defense (16th Air Force / TD), Aug. 2023.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for Efficient,
+<li><p>P. Markopoulos, “Tensor Methods for Efficient,
 Robust, and Continual Machine Learning,” presented at MATRIX AI Seminar
 Series, UT San Antonio, San Antonio, TX, Sept. 2022.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Advances in Robust Machine
+<li><p>P. Markopoulos, “Advances in Robust Machine
 Learning,” presented at Intelligence Community Academic Research
 Symposium (ICARS), National Academies of Sciences, Engineering, and
 Medicine, Sept. 2022.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Advances in Robust Machine
+<li><p>P. Markopoulos, “Advances in Robust Machine
 Learning,” presented at ICARS, National Academies of Sciences,
 Engineering, and Medicine, Sept. 2021.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “L1-norm PCA: Algorithms and
+<li><p>P. Markopoulos, “L1-norm PCA: Algorithms and
 Applications,” presented at Graduate Seminar, RIT, Rochester, NY, May
 2021.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for Imaging
+<li><p>P. Markopoulos, “Tensor Methods for Imaging
 Science,” presented at Center for Imaging Science, RIT, Rochester, NY,
 Nov. 2020.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods Based on
+<li><p>P. Markopoulos, “Tensor Methods Based on
 Absolute Projections,” presented at Applied Mathematics Seminar,
 Syracuse Univ., Syracuse, NY, Oct. 2020.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Improving CNNs Towards
+<li><p>P. Markopoulos, “Improving CNNs Towards
 Real-Time Multi-Modal Object Detection in Remote Sensing Imagery,”
 presented at ICARS, National Academies of Sciences, Engineering, and
 Medicine, Sept. 2020.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for Image
+<li><p>P. Markopoulos, “Tensor Methods for Image
 Processing,” presented at SIAM IS20, Tensor Methods for Image Processing
 Mini-Symposium, Toronto, Canada, Jul.  2020.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Improving CNNs Towards
+<li><p>P. Markopoulos, “Improving CNNs Towards
 Real-Time Multi-Modal Object Detection in Remote Sensing Imagery,”
 presented at National Geospatial-Intelligence Agency (National Geospatial-Intelligence Agency), Jul. 
 2020.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for Robust
+<li><p>P. Markopoulos, “Tensor Methods for Robust
 Machine Learning,” presented at U.S. Air Force Research Laboratory
 (Air Force Research Laboratory/RI), Rome, NY, Apr. 2020.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Robust Subspace Learning and
+<li><p>P. Markopoulos, “Robust Subspace Learning and
 Applications in Computer Vision,” presented at ICCV Workshop on Robust
 Subspace Learning, Seoul, Korea, Oct. 2019.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “L1-norm PCA: Algorithms and
+<li><p>P. Markopoulos, “L1-norm PCA: Algorithms and
 Applications,” presented at U.S. Air Force Research Laboratory (Air Force Research Laboratory),
 Rome, NY, Jun. 2018.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for Imaging and
+<li><p>P. Markopoulos, “Tensor Methods for Imaging and
 Sensing,” presented at Institute for Sensing and Embedded Network
 Systems Engineering (I-SENSE), Florida Atlantic Univ., Boca Raton, FL,
 May 2018.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Robust Subspace Processing,”
+<li><p>P. Markopoulos, “Robust Subspace Processing,”
 presented at MSEE Graduate Seminar, RIT, Rochester, NY,
 Apr. 2018.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “L1-norm Methods for Signal
+<li><p>P. Markopoulos, “L1-norm Methods for Signal
 Processing and Machine Learning,” presented at Move78 / AI and Cognitive
 Technologies Speaker Series, RIT, Rochester, NY, Jan. 2018.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Robust Subspace Processing and
+<li><p>P. Markopoulos, “Robust Subspace Processing and
 Machine Learning,” presented at Univ. of Rochester (IEEE Rochester
 Section, AES/COMSOC), Rochester, NY, Nov. 2016.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “L1-norm Tensor Methods Based on
+<li><p>P. Markopoulos, “L1-norm Tensor Methods Based on
 Absolute Projections,” presented at Dept. of Electrical and
 Microelectronic Engineering, RIT, Rochester, NY, Mar. 2015.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for
+<li><p>P. Markopoulos, “Tensor Methods for
 Communications and Signal Processing,” presented at Dept. of Electrical
 and Computer Engineering, Northeastern Univ., Boston, MA,
 Oct. 2014.</p></li>
 </ol>
-<p><u><strong>Tutorials and Short Courses</strong></u></p>
+<p><u>Tutorials and Short Courses</u></p>
 <ol>
-<li><p><strong>P. Markopoulos</strong>, “Federated Learning for
+<li><p>P. Markopoulos, “Federated Learning for
 Decentralized and Privacy-Preserving Machine Learning,” tutorial
 presented at SPIE DCS 2025, Machine Learning from Challenging Data
 Conf., Apr. 2025.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Federated Learning in
+<li><p>P. Markopoulos, “Federated Learning in
 Healthcare: A Brief Review of Foundations, Applications, Challenges, and
 Opportunities,” tutorial presented at National Science Foundation AI Spring School, UT San
 Antonio, San Antonio, TX, Feb. 2025.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Federated Learning:
+<li><p>P. Markopoulos, “Federated Learning:
 Introductory Tutorial,” tutorial presented at Dynamic Data-Driven
 Application Systems (DDDAS), Nov. 2024.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “Tensor Methods for Signal
+<li><p>P. Markopoulos, “Tensor Methods for Signal
 Processing and Machine Learning,” tutorial presented at Summer School on
 Data Science, Technical Univ. of Crete, Chania, Greece,
 Aug. 2020.</p></li>
-<li><p><strong>P. Markopoulos</strong>, “L1-norm Principal Component
+<li><p>P. Markopoulos, “L1-norm Principal Component
 Analysis of Multi-Modal Data,” tutorial presented at Summer School,
 Technical Univ. of Crete, Chania, Greece, Jul.  2018.</p></li>
 </ol>
 <p><u><strong>Other Presentations</strong></u></p>
 <ol>
-<li><p><strong>P. Markopoulos</strong>, “L1-norm Methods for
+<li><p>P. Markopoulos, “L1-norm Methods for
 Communications and Signal Processing,” poster presented at IEEE North
 American School of Information Theory, Toronto, Canada, Jun.
 2014.</p></li>
@@ -1475,73 +1490,59 @@ American School of Information Theory, Toronto, Canada, Jun.
 <h1 id="sec:grants">Funding</h1>
 <div class="section-search"><input type="text" class="section-search-input" data-section="sec:grants" placeholder="Search funding…"></div>
 
-<p><u><strong>Current Grants</strong></u></p>
+<div class="stat-box">
+Approximately <strong>$6.1M</strong> in total external funding as PI/Co-PI/SP. Personal share of about <strong>$1.8M</strong>. About <strong>67%</strong> of project totals secured since tenure in August 2021.<br>Sponsors include the National Science Foundation, Air Force Office of Scientific Research, National Geospatial-Intelligence Agency, Air Force Research Laboratory, and National Institutes of Health.
+</div>
+
+<h2>Current Grants</h2>
 <ul>
-<li><p>Title: “PARTNER: Neuro-Inspired AI for the Edge at UTSA (NAIAD)”; Sponsor: National Science Foundation (Award #2332744); Total: $2,800,000; Dates: Sep. 15, 2023 – ; Role: Co-PI. <a href="https://ai.utsa.edu/naiad/" target="_blank" rel="noopener noreferrer">Project Page</a></p></li> 
-</ul>
-<p><u><strong>Previous Grants</strong></u></p>
-<ul>
-<li><p>Title: “AI/ML Models Designed to Improve the Quality of Life for Individuals with Disabilities”; Sponsor:  National Institutes of Health (AIM-AHEAD);  Dates: May 2025 - Apr. 2026; Role:  Co-PI</p></li>
-<li><p>Title: “EXAIL: NSF ExpandAI Leadership Workshop”; Sponsor: National Science Foundation (Award #2437262); Total: $137,071; Dates: Sep. 1, 2024 – ; Role: Co-PI</p></li>
-<li><p>Title: “MATCH: The MATRIX AI/ML Concierge for Healthcare”; Sponsor: National Institutes of Health (AIM-AHEAD); Dates: Sep. 2024 – Sep. 2025; Role:  Senior Personnel</p></li>
-<li><p>Title: “M-POWER: MATRIX-Provided AI/ML Open-Source Resource Center for Behavioral Health Empowerment”; Sponsor:  National Institutes of Health (AIM-AHEAD); Nov. 16, 2023 – Aug. 2024; Role:  Senior Personnel</p></li>
-<li><p>Title: “Theory and Efficient Algorithms for Dynamic and Robust L1-Norm Analysis of Tensor Data” [Young Investigator Program (YIP)]; Sponsor: Air Force Office of Scientific Research [originally awarded to RIT; balance transferred to UT San Antonio]; Dates: Jan. 2020 – May 2024; Role:  Sole PI.<br /></li>
-<li><p>Title: “Collaborative Research: CDS&E: Theoretical Foundations and Algorithms for L1-Norm-Based Reliable Multi-Modal Data Analysis”; Sponsor: National Science Foundation (Award #1808582); Total: $323,973; Dates: Sep. 1, 2018 – ; Role: PI (RIT).</p></li>
-<li><p>Title: “Target Detection/Tracking and Activity Recognition from Multimodal Data”; Sponsor: National Geospatial-Intelligence Agency; Dates: Sep. 2019 – Sep. 2024; Role: Co-PI<br /> </li>
-<li><p>Title: “Efficient Radar Imaging and Machine Learning for Concealed Object Detection”; Sponsor: Air Force Research Laboratory; Dates: Oct. 2021 – Jun. 2022; Role: Sole PI</p></li>
-<li><p>Title: “Continual and Incremental Learning with Tensor-Factorized Neural Networks”; Sponsor: Air Force Research Laboratory; Dates:  Sep. 2021 – Dec. 2021; Role: Sole PI</p></li>
-<li><p>Title: “Data-Driven Adaptive Learning for Video Analytics”; Sponsor: Air Force Research Laboratory; Dates: Feb. 2018 – Feb. 2021; Role: Co-PI</p></li>
-<li><p>Title: “Efficient Methods for Dynamic and Robust Analysis of Tensors”; Sponsor: Air Force Research Laboratory; Dates:   Nov. 2020 – Dec. 2020; Role: Sole PI</p></li>
-<li><p>Title: “Development and Testing of Robust Algorithms for Real-Time Recognition of Complex Gait Patterns from Wearable Sensor Data”; Sponsor:  RIT, KGCOE;  May 2018 – Dec. 2019; Role: PI</p></li>
-<li><p>Title: “Methods for Corruption-Resistant Analysis of Tensor Data”; Sponsor:  Air Force Research Laboratory; Dates: Sep. 2018 – Oct. 2018; Role: Sole PI</p></li>
-<li><p>Title: “Distributed Self-Localization of Wireless-Node Squads in Hostile Environments”;  Sponsor: Harris Corporation; Dates:  Nov. 2016 – Jun. 2017; Role: PI</p></li>
-<li><p>Title: “Practical L1-Norm Principal Component Analysis: Tools for Reliable Data Analytics”; Sponsor: RIT OVPR; Dates: Apr. 2016 – Mar. 2017; Role: Sole PI</p></li>
+<li><p>PARTNER: Neuro-Inspired AI for the Edge at UTSA (NAIAD) (#2332744). Sponsor: NSF. Total: $2,800,000. Own share: $420,000 (15%). Dates: 9/2023 –. Role: Co-PI.<br>Project page: <a href="https://ai.utsa.edu/naiad/" target="_blank">ai.utsa.edu/naiad</a></p></li>
 </ul>
 
-<h2>Pending Proposals</h2>
+<h2>Past Grants</h2>
 <ul>
-<li><p>Title: “AI-Infrastructure-Hubs: AIM-TX Texas AI Infrastructure Hub for Advanced Manufacturing Digital Transformation”; Sponsor: National Science Foundation (via The University of Texas Rio Grande Valley); Total: $1,500,000; Dates: Jul. 2027 – Jun. 2032; Role: Co-PI.</p></li>
-<li><p>Title: “Psychotropic Polypharmacy Patterns, Risks, and Geographic Differences in Autism Spectrum Disorder”; Sponsor: National Institutes of Health; Total: $1,168,542; Dates: Jan. 2027 – Dec. 2029; Role: Co-PI.</p></li>
-<li><p>Title: “Socio-Exposome Influences on Co-occurring Conditions in Autism Spectrum Disorder: A Machine Learning and Virtual Twins Framework”; Sponsor: National Institutes of Health; Total: $1,113,642; Dates: Jan. 2027 – Dec. 2029; Role: Co-PI.</p></li>
-<li><p>Title: “Collaborative Research: FET: Foundations of Quantum Tensor Decomposition”; Sponsor: National Science Foundation; Total: $700,000; Dates: Oct. 2026 – Sep. 2030; Role: PI.</p></li>
+<li><p>AI/ML Models for Quality of Life for Individuals with Disabilities. Sponsor: UNTHSC / AIM-AHEAD. Total: $100,000. Own share: $30,000 (30%). Dates: 5/2025 – 4/2026. Role: Co-PI.</p></li>
+<li><p>EXAIL: NSF ExpandAI Leadership Workshop (#2437262). Sponsor: NSF. Total: $137,071. Own share: $68,536 (50%). Dates: 8/2024 – 8/2025. Role: Co-PI.</p></li>
+<li><p>MATCH: MATRIX AI/ML Concierge for Healthcare. Sponsor: UNTHSC / MATRIX. Total: $500,000. Own share: $11,000. Dates: 9/2024 – 9/2025. Role: SP.</p></li>
+<li><p>M-POWER: AI/ML Open-Source Resource Center for Behavioral Health. Sponsor: UNTHSC / MATRIX. Total: $500,000. Own share: $50,000 (10%). Dates: 11/2023 – 8/2024. Role: SP.</p></li>
+<li><p>Dynamic and Robust L1-Norm Analysis of Tensor Data. Originally at RIT; $195,401 transferred to UTSA (12/2022 – 5/2024). Sponsor: AFOSR, Young Investigator Award. Total: $348,460. Own share: $348,460 (100%). Dates: 1/2020 – 5/2024. Role: Sole PI.<br>Award announcement: <a href="https://www.afrl.af.mil/News/Article/2328824/afosr-awards-grants-to-42-scientists-engineers-through-young-investigator-resea/" target="_blank">afrl.af.mil</a></p></li>
+<li><p>Target Detection/Tracking and Activity Recognition from Multimodal DataThree renewals; $10,000 transferred to UTSA (9/2023 – May 2024). Sponsor: NGA. Total: $858,534. Own share: $343,414 (40%). Dates: 9/2019 – 9/2024. Role: Co-PI.</p></li>
+<li><p>CDS&E: L1-Norm-Based Reliable Multi-Modal Data Analysis (#1808582). Sponsor: NSF. Total: $323,973. Own share: $194,384 (60%). Dates: 9/2018 – 2023. Role: PI.</p></li>
+<li><p>Efficient Radar Imaging and Machine Learning for Concealed Object Detection. Sponsor: University of Rochester, College of Engineering. Total: $58,079. Own share: $58,079 (100%). Dates: 10/2021 – 6/2022. Role: Sole PI.</p></li>
+<li><p>Continual and Incremental Learning with Tensor-Factorized Neural Networks. Sponsor: AFRL. Total: $30,286. Own share: $30,286 (100%). Dates: 9/2021 – 12/2021. Role: Sole PI.</p></li>
+<li><p>Data-Driven Adaptive Learning for Video Analytics. Sponsor: AFRL. Total: $352,152. Own share: $142,000 (40%). Dates: 2/2018 – 2/2021. Role: Co-PI.</p></li>
+<li><p>Efficient Methods for Dynamic and Robust Analysis of Tensors. Sponsor: AFRL. Total: $9,999. Own share: $9,999 (100%). Dates: 11/2020 – 12/2020. Role: Sole PI.</p></li>
+<li><p>Robust Algorithms for Real-Time Recognition of Complex Gait Patterns. Sponsor: RIT / KGCOE. Total: $21,000. Own share: $10,500 (50%). Dates: 5/2018 – 12/2019. Role: PI.</p></li>
+<li><p>Methods for Corruption-Resistant Analysis of Tensor Data. Sponsor: AFRL. Total: $15,000. Own share: $15,000 (100%). Dates: 9/2018 – 10/2018. Role: Sole PI.</p></li>
+<li><p>Distributed Self-Localization of Wireless-Node Squads in Hostile Environments. Sponsor: Harris Corporation. Total: $60,000. Own share: $40,000 (67%). Dates: 11/2016 – 6/2017. Role: PI.</p></li>
+<li><p>Practical L1-Norm Principal Component Analysis. Sponsor: RIT OVPR. Total: $5,000. Own share: $5,000 (100%). Dates: 4/2016 – 3/2017. Role: Sole PI.</p></li>
 </ul>
+
 <h1 id="sec:teaching">Teaching</h1>
-<p>Career-wide teaching metrics (enrollment-weighted averages, as of
-Jun. 10, 2026):</p>
-<ul>
-<li><p><strong>Course rating</strong>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∼</mo><annotation encoding="application/x-tex">\sim</annotation></semantics></math>
-4.34/5</p></li>
-<li><p><strong>Instructor rating</strong>:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>∼</mo><annotation encoding="application/x-tex">\sim</annotation></semantics></math>
-4.40/5</p></li>
-</ul>
+<div class="stat-box">
+<strong>4.34</strong>/5 course rating | <strong>4.40</strong>/5 instructor rating<br>
+<span style="color:var(--muted);">Enrollment-weighted averages, career-wide, as of June 2026.</span>
+</div>
 <p><em>Below, “YYYY-T (E)” denotes year ‘YYYY’, term ‘T’, and enrollment
 (over all sections) ‘E’</em><br />
 <h2>Courses at UT San Antonio (2022 – present)</h2>
-<table class="cv-table">
-<thead><tr><th>Course</th><th>Level</th><th>Terms</th><th>Avg. Rating</th></tr></thead>
-<tbody>
-<tr><td><strong>Machine Learning</strong><br><small>EE 4463 / EE 5573 / EE 6363 / CS 6243</small></td><td>UG/G cross-listed</td><td>2026-S (33), 2025-F (18), 2025-S (43), 2024-F (29), 2023-F (22), 2022-F (8)</td><td>4.54 / 4.63</td></tr>
-<tr><td><strong>Probability and Stochastic Processes</strong><br><small>EE 3533</small></td><td>Undergraduate</td><td>2023-S (35)</td><td>4.50 / 4.55</td></tr>
-<tr><td><strong>ECE Graduate Seminar</strong><br><small>EE 6991 / EE 7931</small></td><td>Graduate (1 cr, invited speakers)</td><td>2024-S (12)</td><td>—</td></tr>
-</tbody>
-</table>
+<ul>
+<li><p>Machine Learning EE 4463 / EE 5573 / EE 6363 / CS 6243. Level: UG/G cross-listed. Terms: 2026-S (33), 2025-F (18), 2025-S (43), 2024-F (29), 2023-F (22), 2022-F (8). Rating: 4.54 / 4.63.</p></li>
+<li><p>Probability and Stochastic Processes EE 3533. Level: Undergraduate. Terms: 2023-S (35). Rating: 4.50 / 4.55.</p></li>
+<li><p>ECE Graduate Seminar EE 6991 / EE 7931. Level: Graduate (1 cr, invited speakers). Terms: 2024-S (12). Rating: —.</p></li>
+</ul>
 
 <h2>Courses at RIT (2015 – 2022)</h2>
-<table class="cv-table">
-<thead><tr><th>Course</th><th>Level</th><th>Terms</th><th>Avg. Rating</th></tr></thead>
-<tbody>
-<tr><td><strong>Artificial Intelligence Explorations</strong><br><small>EEEE-547 / EEEE-647</small></td><td>UG/G</td><td>2021-F (31)</td><td>4.08 / 4.11</td></tr>
-<tr><td><strong>Introduction to Communication Systems</strong><br><small>EEEE-484</small></td><td>Undergraduate</td><td>2019-F, 2020-S</td><td>4.10</td></tr>
-<tr><td><strong>Digital Data Communications</strong><br><small>EEEE-593 / EEEE-693</small></td><td>UG/G cross-listed</td><td>2015-F, 2016-F, 2018-S, 2019-S</td><td>4.23</td></tr>
-<tr><td><strong>Communication Networks</strong><br><small>EEEE-592 / EEEE-692</small></td><td>UG/G cross-listed</td><td>2016-S, 2017-S, 2017-F, 2018-F</td><td>4.35</td></tr>
-<tr><td><strong>Sensor Array Processing for Wireless Communications</strong><br><small>EEEE-594 / EEEE-694</small></td><td>UG/G; newly developed</td><td>2018-S, 2019-S, 2020-S</td><td>4.36</td></tr>
-<tr><td><strong>Optimization Methods for Engineers</strong><br><small>EEEE-595 / EEEE-695</small></td><td>UG/G; newly developed</td><td>Developed; not offered</td><td>. </td></tr>
-<tr><td><strong>Freshman Practicum</strong><br><small>EEEE-105</small></td><td>Undergraduate</td><td>2017-F</td><td>. </td></tr>
-<tr><td><strong>Cooperative Education</strong><br><small>EEEE-499</small></td><td>Co-op supervision</td><td>2017-S – 2022-S</td><td>. </td></tr>
-</tbody>
-</table>
+<ul>
+<li><p>Artificial Intelligence Explorations EEEE-547 / EEEE-647. Level: UG/G. Terms: 2021-F (31). Rating: 4.08 / 4.11.</p></li>
+<li><p>Introduction to Communication Systems EEEE-484. Level: Undergraduate. Terms: 2019-F, 2020-S. Rating: 4.10.</p></li>
+<li><p>Digital Data Communications EEEE-593 / EEEE-693. Level: UG/G cross-listed. Terms: 2015-F, 2016-F, 2018-S, 2019-S. Rating: 4.23.</p></li>
+<li><p>Communication Networks EEEE-592 / EEEE-692. Level: UG/G cross-listed. Terms: 2016-S, 2017-S, 2017-F, 2018-F. Rating: 4.35.</p></li>
+<li><p>Sensor Array Processing for Wireless Communications EEEE-594 / EEEE-694. Level: UG/G; newly developed. Terms: 2018-S, 2019-S, 2020-S. Rating: 4.36.</p></li>
+<li><p>Optimization Methods for Engineers EEEE-595 / EEEE-695. Level: UG/G; newly developed. Terms: Developed; not offered. Rating: ..</p></li>
+<li><p>Freshman Practicum EEEE-105. Level: Undergraduate. Terms: 2017-F. Rating: ..</p></li>
+<li><p>Cooperative Education EEEE-499. Level: Co-op supervision. Terms: 2017-S – 2022-S. Rating: ..</p></li>
+</ul>
 <h1 id="sec:team">Student Mentoring</h1>
 <div class="section-search"><input type="text" class="section-search-input" data-section="sec:team" placeholder="Search mentoring…"></div>
 
@@ -1568,8 +1569,11 @@ Jun. 10, 2026):</p>
 <li><p>S. M. Husain, B.S., Computer Engineering, UT San Antonio, 2025 – present</p></li>
 </ul>
 <p><u><em>Graduated</em></u></p>
-<p>Over 25 past M.S./B.S. advisees, working on theses, graduate papers, volunteering, funded research assistantships. </p>
-<p><u><strong>Thesis/Dissertation Committees</strong></u></p>
+<div class="stat-box">
+<strong>9</strong> doctoral advisees (5 graduated) | <strong>25+</strong> M.S./B.S. advisees | <strong>30+</strong> thesis committees
+</div>
+<p>Over 25 past M.S./B.S. advisees, working on theses, graduate papers, volunteering, funded research assistantships.</p>
+<p><u>Thesis/Dissertation Committees</u></p>
 <p>Over 30 graduate/doctoral thesis/dissertation committees.</p>
 <h1 id="sec:service">Service</h1>
 <div class="section-search"><input type="text" class="section-search-input" data-section="sec:service" placeholder="Search service…"></div>
@@ -1690,7 +1694,7 @@ Spring 2017</p></li>
 <li><p>Chair, Branding Committee, Dept. of Electrical and
 Microelectronic Engineering, 2021 – 2022 (Chair: S. Dianat)</p></li>
 </ul>
-<p><u><strong>Service at Federal Agencies</strong></u></p>
+<p><u>Service at Federal Agencies</u></p>
 <ul>
 <li><p>Proposal Evaluation Panelist, National Science Foundation Directorate for CISE,
 2021</p></li>
@@ -1785,7 +1789,7 @@ Aug. 2020</p></li>
 <li><p>IEEE MLSP 2017, Tokyo, Japan, Sept. 2017</p></li>
 <li><p>EUSIPCO 2017, Kos, Greece, Sept. 2017</p></li>
 </ul>
-<p><u><strong>Paper Reviews</strong></u></p>
+<p><u>Paper Reviews</u></p>
 <ul>
 <li><p>Regular reviews for journals: <em>IEEE Trans. Signal
 Process.</em>; <em>IEEE J. Sel. Topics Signal Process.</em>; <em>IEEE
@@ -1820,7 +1824,7 @@ RIT, 2019</p></li>
 
 
 <footer style="margin-top:2em; padding-top:1em; border-top:1px solid #ccc; text-align:center; color:#777;">
-  <small>&copy; 2026 Panagiotis Markopoulos. All rights reserved.</small>
+  <span>&copy; 2026 Panagiotis Markopoulos. All rights reserved.</span>
 </footer>
 
 
@@ -1864,10 +1868,38 @@ document.querySelectorAll('.section-search-input').forEach(inp => {
           li.classList.toggle('hidden', q && !li.innerText.toLowerCase().includes(q));
         });
       }
+      if (n.tagName === 'TABLE') {
+        n.querySelectorAll('tbody tr').forEach(tr => {
+          tr.classList.toggle('hidden', q && !tr.innerText.toLowerCase().includes(q));
+        });
+      }
       n = n.nextElementSibling;
     }
   });
 });
+
+
+function exportCVTxt() {
+  const content = document.getElementById('layout-content');
+  let text = '';
+  const walk = (el) => {
+    if (el.tagName === 'H1') text += '\n\n' + el.innerText.trim().toUpperCase() + '\n' + '='.repeat(el.innerText.trim().length) + '\n';
+    else if (el.tagName === 'H2' || el.tagName === 'H3') text += '\n' + el.innerText.trim() + '\n';
+    else if (el.tagName === 'P' || el.classList.contains('stat-box')) text += el.innerText.trim().replace(/·/g, '|') + '\n';
+    else if (el.tagName === 'LI') text += '- ' + el.innerText.trim() + '\n';
+    else if (el.tagName === 'TR') {
+      const cells = el.querySelectorAll('td, th');
+      text += Array.from(cells).map(c => c.innerText.trim()).join(' | ') + '\n';
+    }
+    else Array.from(el.children).forEach(walk);
+  };
+  walk(content);
+  const blob = new Blob([text.trim()], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Markopoulos_CV.txt';
+  a.click();
+}
 
 function exportCV() {
   document.body.classList.remove('print-pubs');
